@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About Me - UCLA Bound</title>
     <style>
         :root {
@@ -15,13 +15,13 @@
         body {
             background-color: var(--dark-blue);
             margin: 0;
-            padding: 20px 0; /* Space for mobile edges */
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             color: var(--white);
+            overflow: hidden;
         }
 
         .about-card {
@@ -29,56 +29,55 @@
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 30px;
+            padding: 40px;
             border-radius: 24px;
-            width: 85%;
-            max-width: 400px;
+            width: 90%;
+            max-width: 450px;
             text-align: center;
             box-shadow: 0 25px 50px rgba(0,0,0,0.3);
             animation: slideUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
             opacity: 0;
         }
 
-        /* The Link Wrapper */
+        /* The Link Wrapper for the Profile Image */
         .img-link {
             display: inline-block;
             text-decoration: none;
-            margin-bottom: 20px;
             border-radius: 50%;
         }
 
         .profile-img {
-            width: 160px;
-            height: 160px;
+            width: 150px;
+            height: 150px;
             object-fit: cover;
             border-radius: 50%;
             border: 4px solid var(--ucla-gold);
+            margin-bottom: 20px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
             display: block;
         }
 
-        /* Combined Hover and Mobile Touch Effect */
-        .img-link:hover .profile-img, 
-        .img-link:active .profile-img {
-            transform: scale(1.1) rotate(3deg);
-            box-shadow: 0 15px 30px rgba(255, 209, 0, 0.5);
-            border-color: var(--white);
+        /* Keep your requested hover animation */
+        .profile-img:hover {
+            transform: scale(1.05) rotate(2deg);
+            box-shadow: 0 15px 30px rgba(255, 209, 0, 0.4);
         }
 
         .about-card h2 {
-            margin: 10px 0 15px 0;
+            margin-top: 0;
             color: var(--ucla-gold);
             text-transform: uppercase;
             letter-spacing: 2px;
-            font-size: 1.5rem;
+            font-size: 1.6rem;
         }
 
         .about-card p {
             line-height: 1.6;
-            margin-bottom: 15px;
-            font-size: 1rem;
-            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 20px;
+            font-size: 1.05rem;
+            color: rgba(255, 255, 255, 0.95);
         }
 
         .ucla-accent {
@@ -86,45 +85,25 @@
             font-weight: bold;
         }
 
-        /* Navigation Buttons */
-        .button-group {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
         .contact-link {
             color: var(--ucla-gold);
             text-decoration: none;
             font-weight: bold;
-            padding: 10px 20px;
-            border: 2px solid var(--ucla-gold);
-            border-radius: 12px;
+            padding: 5px 10px;
+            border: 1px solid var(--ucla-gold);
+            border-radius: 8px;
             transition: all 0.3s ease;
+            display: inline-block;
+            margin-top: 10px;
         }
 
         .contact-link:hover {
             background: var(--ucla-gold);
             color: var(--dark-blue);
-            transform: translateY(-3px);
-        }
-
-        .home-btn {
-            color: var(--white);
-            text-decoration: none;
-            font-size: 0.9rem;
-            opacity: 0.7;
-            margin-top: 10px;
-        }
-
-        .home-btn:hover {
-            opacity: 1;
-            text-decoration: underline;
         }
 
         @keyframes slideUp {
-            0% { opacity: 0; transform: translateY(40px); }
+            0% { opacity: 0; transform: translateY(60px); }
             100% { opacity: 1; transform: translateY(0); }
         }
     </style>
@@ -132,16 +111,16 @@
 <body>
 
     <div class="about-card">
-        <a href="https://www.instagram.com/damayne_a/" target="_blank" rel="noopener noreferrer" class="img-link">
-            <img src="<blockquote class="imgur-embed-pub" lang="en" data-id="a/wzRqQ3k"  ><a href="//imgur.com/a/wzRqQ3k">Damayne</a></blockquote><script async src="//s.imgur.com/min/embed.js" charset="utf-8"></script>" alt="Damayne Anderson" class="profile-img">
+        <a href="https://www.instagram.com/damayne_a/" target="_blank" class="img-link">
+            <img src="https://i.ibb.co/v4cdRpd6/Damayne.jpg" alt="Damayne Anderson" class="profile-img">
         </a>
         
         <h2>Damayne Anderson</h2>
         
         <p>
             I am a <span class="ucla-accent">Freshman at Millburn (Class of 2029)</span>. 
-            This UCLA-themed platform reflects my goal to attend 
-            <span class="ucla-accent">UCLA</span> to play basketball D1 and study 
+            This UCLA-themed platform is a reflection of my goal to attend 
+            <span class="ucla-accent">UCLA</span> to play basketball At the Divison 1 Level and study 
             <span class="ucla-accent">Applied Mathematics</span>.
         </p>
         
@@ -149,10 +128,10 @@
             I built this app to merge my love for coding and math, helping others sharpen their skills daily.
         </p>
         
-        <div class="button-group">
-            <a href="https://discord.gg/kW5f4cbyU" class="contact-link" target="_blank">Discord Suggestions</a>
-            <a href="index.html" class="home-btn">← Back to Math App</a>
-        </div>
+        <p>
+            Got suggestions? Catch me on 
+            <a href="https://discord.gg/kW5f4cbyU" class="contact-link" target="_blank">Discord</a>
+        </p>
     </div>
 
 </body>
