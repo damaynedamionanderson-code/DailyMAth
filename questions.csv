@@ -1,0 +1,4 @@
+difficulty,question_text,answer,instruction
+easy,5 \times 7,35,Test Question from CSV
+medium,\sqrt{144},12,Test Question from CSV
+hard,\int_{0}^{1} 3x^2 dx,1,Test Question from CSV
