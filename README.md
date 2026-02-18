@@ -1,2 +1,20 @@
-# DailyMAth
-Daily math
+# Daily Math App 🧮
+
+A dynamic web application for daily mathematics practice featuring LaTeX rendering, a scientific calculator, and an integrated Desmos graphing suite.
+
+## 🚀 Getting Started
+1. **Launch the Server:** Navigate to `/Backend` and run `python3 server.py`. (Running on port 18080).
+2. **Open the App:** Open `Starterpage.html` in any modern web browser.
+
+## 📂 Project Structure
+- **/Frontend**: Contains the HTML pages (Starter, MathPage, AboutMe).
+- **/Backend**: 
+    - `server.py`: Flask API handling data requests and subscriptions.
+    - `questions.csv`: The database for all math problems.
+    - `subscribers.txt`: List of emails for the daily challenge.
+- **/C++ System**: The core engine for the automated email distribution system.
+
+## 🛠️ Tech Stack
+- **Language:** JavaScript, Python, C++, CSS
+- **Frameworks:** Flask (Python)
+- **APIs:** Desmos Graphing Calculator, MathJax (LaTeX)
