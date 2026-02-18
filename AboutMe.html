@@ -21,7 +21,7 @@
             min-height: 100vh;
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             color: var(--white);
-            overflow: hidden;
+            /* Removed overflow: hidden to allow scrolling on small phones */
         }
 
         .about-card {
@@ -32,18 +32,19 @@
             padding: 40px;
             border-radius: 24px;
             width: 90%;
-            max-width: 450px;
+            max-width: 400px;
             text-align: center;
             box-shadow: 0 25px 50px rgba(0,0,0,0.3);
             animation: slideUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
             opacity: 0;
         }
 
-        /* The Link Wrapper for the Profile Image */
+        /* The Link Wrapper */
         .img-link {
             display: inline-block;
             text-decoration: none;
-            border-radius: 50%;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
         }
 
         .profile-img {
@@ -52,21 +53,20 @@
             object-fit: cover;
             border-radius: 50%;
             border: 4px solid var(--ucla-gold);
-            margin-bottom: 20px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: pointer;
+            transition: all 0.3s ease;
             display: block;
         }
 
-        /* Keep your requested hover animation */
-        .profile-img:hover {
-            transform: scale(1.05) rotate(2deg);
-            box-shadow: 0 15px 30px rgba(255, 209, 0, 0.4);
+        /* Restoration of Hover Feature */
+        .img-link:hover .profile-img {
+            transform: scale(1.1) rotate(3deg);
+            box-shadow: 0 15px 30px rgba(255, 209, 0, 0.5);
+            border-color: var(--white);
         }
 
         .about-card h2 {
-            margin-top: 0;
+            margin: 10px 0 20px 0;
             color: var(--ucla-gold);
             text-transform: uppercase;
             letter-spacing: 2px;
@@ -89,8 +89,8 @@
             color: var(--ucla-gold);
             text-decoration: none;
             font-weight: bold;
-            padding: 5px 10px;
-            border: 1px solid var(--ucla-gold);
+            padding: 8px 16px;
+            border: 2px solid var(--ucla-gold);
             border-radius: 8px;
             transition: all 0.3s ease;
             display: inline-block;
@@ -100,6 +100,7 @@
         .contact-link:hover {
             background: var(--ucla-gold);
             color: var(--dark-blue);
+            transform: translateY(-2px);
         }
 
         @keyframes slideUp {
@@ -111,17 +112,16 @@
 <body>
 
     <div class="about-card">
-       <a href="https://www.instagram.com/damayne_a/" target="_blank" rel="noopener noreferrer">
-    <img src="Damayne.jpg" alt="Damayne Anderson" class="profile-img" 
-         style="max-width: 100%; width: 200px; height: auto; border-radius: 50%;">
-</a>
+        <a href="https://www.instagram.com/damayne_a/" target="_blank" rel="noopener noreferrer" class="img-link">
+            <img src="Damayne.jpg" alt="Damayne Anderson" class="profile-img">
+        </a>
         
         <h2>Damayne Anderson</h2>
         
         <p>
             I am a <span class="ucla-accent">Freshman at Millburn (Class of 2029)</span>. 
             This UCLA-themed platform is a reflection of my goal to attend 
-            <span class="ucla-accent">UCLA</span> to play basketball At the Divison 1 Level and study 
+            <span class="ucla-accent">UCLA</span> to play basketball at the Division 1 Level and study 
             <span class="ucla-accent">Applied Mathematics</span>.
         </p>
         
@@ -131,6 +131,7 @@
         
         <p>
             Got suggestions? Catch me on 
+            <br>
             <a href="https://discord.gg/kW5f4cbyU" class="contact-link" target="_blank">Discord</a>
         </p>
     </div>
