@@ -4,13 +4,17 @@ import csv
 import os
 
 app = Flask(__name__)
-CORS(app)
+
+# Update this line to trust your live domain and your ngrok tunnel
+CORS(app, resources={r"/*": {"origins": ["https://daily-math.org", "https://www.daily-math.org"]}})
 
 @app.route('/subscribe', methods=['POST'])
 def subscribe():
+    # Adding a print statement helps you see the email in your VS Code terminal
     data = request.get_json(force=True)
     email = data.get('email')
     if email:
+        print(f"New Subscriber: {email}") # See it in your terminal
         with open("subscribers.txt", "a") as f:
             f.write(email + "\n")
         return jsonify({"success": True}), 200
@@ -19,7 +23,7 @@ def subscribe():
 @app.route('/get-questions', methods=['GET'])
 def get_questions():
     questions = []
-    # Make sure this matches your file name exactly
+    # Make sure this path is exactly where your questions.csv lives
     csv_path = "/home/damaynedamionanderson/code/DailyMathApp/Backend/questions.csv"
     
     if not os.path.exists(csv_path):
@@ -32,4 +36,5 @@ def get_questions():
     return jsonify(questions)
 
 if __name__ == '__main__':
+    # Flask runs on 18080 to match your ngrok setup
     app.run(port=18080, debug=True)
