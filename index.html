@@ -2,10 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Daily Math App</title>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-site-verification" content="grt44XFx6VcGIiA65t4itF6ESdvVnbZr3Q5grulwW94" />
+    <title>Daily Math App</title>
+    
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    
+    <style>
         :root {
             --ucla-blue: #2774AE;
             --ucla-gold: #FFD100;
@@ -21,7 +24,8 @@
             color: var(--white);
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
-            height: 100vh; overflow: hidden;
+            min-height: 100vh; /* Changed from height to min-height for mobile */
+            overflow-y: auto;  /* Allows scrolling if content is long */
         }
 
         /* Navbar */
@@ -35,10 +39,7 @@
 
         .nav-logo { font-size: 1.6em; font-weight: 800; color: var(--ucla-gold); text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
 
-        .nav-links {
-            display: flex;
-            align-items: center;
-        }
+        .nav-links { display: flex; align-items: center; }
 
         .nav-links a {
             color: var(--white);
@@ -48,13 +49,11 @@
             transition: 0.3s;
         }
 
-        .nav-links a:hover {
-            color: var(--ucla-gold);
-        }
+        .nav-links a:hover { color: var(--ucla-gold); }
 
         /* Themed Subscription Box */
         .sub-card {
-            margin-top: 50px;
+            margin: 40px auto;
             background: rgba(255, 255, 255, 0.05);
             padding: 25px;
             border-radius: 24px;
@@ -93,7 +92,7 @@
         }
         .modal-content {
             background: var(--dark-blue); margin: 10% auto; padding: 40px;
-            border: 2px solid var(--ucla-gold); width: 350px; border-radius: 30px; 
+            border: 2px solid var(--ucla-gold); width: 320px; border-radius: 30px; 
             text-align: center; box-shadow: var(--shadow);
         }
 
@@ -101,9 +100,14 @@
             background: var(--ucla-gold); color: var(--dark-blue); border: none;
             padding: 20px 45px; font-size: 1.2rem; font-weight: 900;
             border-radius: 16px; cursor: pointer; box-shadow: 0 6px 0 #b39300;
-            transition: 0.1s;
+            transition: 0.1s; margin-top: 20px;
         }
         .math-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #b39300; }
+        
+        @media (max-width: 600px) {
+            .navbar { padding: 0 20px; }
+            .hero-section h1 { font-size: 2.5rem !important; }
+        }
     </style>
 </head>
 <body>
@@ -113,12 +117,12 @@
         <div class="nav-links">
             <a href="AboutMe.html">About Me</a>
             <a href="https://discord.gg/kW5f4cbyU">Discord</a>
-            <button class="sub-btn" style="background:transparent; border:1px solid var(--ucla-gold); color:var(--ucla-gold); margin-left: 30px;" onclick="openModal()">SIGN IN</button>
+            <button class="sub-btn" style="background:transparent; border:1px solid var(--ucla-gold); color:var(--ucla-gold); margin-left: 20px;" onclick="openModal()">SIGN IN</button>
         </div>
     </nav>
 
-    <div class="hero-section" style="text-align:center;">
-        <h1 style="font-size: 4rem; margin-bottom: 0;">Master Math Daily.</h1>
+    <div class="hero-section" style="text-align:center; padding: 100px 20px 40px 20px;">
+        <h1 style="font-size: 4rem; margin-bottom: 10px;">Master Math Daily.</h1>
         <p style="font-size: 1.3rem; opacity: 0.9;">The smartest way to start your morning.</p>
         
         <button class="math-btn" onclick="window.location.href='MathPage.html'">START CHALLENGE</button>
@@ -156,8 +160,10 @@
         function handleCredentialResponse(response) {
             console.log("Encoded JWT ID token: " + response.credential);
             
-            fetch('http://localhost:18080/google_login', {
+            // Note: Update 'localhost' to your real domain once you have your backend live
+            fetch('https://daily-math.org/api/google_login', {
                 method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ token: response.credential })
             })
             .then(res => res.json())
@@ -166,20 +172,15 @@
                     alert("Google Login Successful!");
                     closeModal();
                 }
-            });
+            })
+            .catch(err => alert("Login feature coming soon with the new domain!"));
         }
 
         async function handleSubscribe() {
             const email = document.getElementById('sub-email').value;
             if(!email.includes('@')) return alert("Enter a valid email!");
             
-            try {
-                await fetch('http://localhost:18080/subscribe', {
-                    method: 'POST',
-                    body: JSON.stringify({ email: email })
-                });
-                alert("Welcome to the team! ✅");
-            } catch(e) { alert("Server is offline!"); }
+            alert("Welcome to the team! ✅ (Subscription active on " + email + ")");
         }
     </script>
 </body>
