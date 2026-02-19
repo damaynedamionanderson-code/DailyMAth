@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Daily Math App</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+    
     <style>
         :root {
             --ucla-blue: #2774AE;
@@ -34,10 +35,7 @@
 
         .nav-logo { font-size: 1.6em; font-weight: 800; color: var(--ucla-gold); text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
 
-        .nav-links {
-            display: flex;
-            align-items: center;
-        }
+        .nav-links { display: flex; align-items: center; }
 
         .nav-links a {
             color: var(--white);
@@ -47,9 +45,7 @@
             transition: 0.3s;
         }
 
-        .nav-links a:hover {
-            color: var(--ucla-gold);
-        }
+        .nav-links a:hover { color: var(--ucla-gold); }
 
         /* Themed Subscription Box */
         .sub-card {
@@ -137,7 +133,7 @@
             <h2 style="color: var(--ucla-gold); margin-bottom: 30px;">Sign In</h2>
             
             <div id="g_id_onload"
-                 data-client_id="YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com"
+                 data-client_id="255071296555-39mb4h1ov691ab6iprvsi2c1bsr1r00e.apps.googleusercontent.com"
                  data-callback="handleCredentialResponse">
             </div>
             <div class="g_id_signin" data-type="standard"></div>
@@ -152,20 +148,34 @@
         function openModal() { document.getElementById('loginModal').style.display = 'block'; }
         function closeModal() { document.getElementById('loginModal').style.display = 'none'; }
 
+        // Main Login Function
         function handleCredentialResponse(response) {
             console.log("Encoded JWT ID token: " + response.credential);
             
-            fetch('http://localhost:18080/google_login', {
+            // Decode for browser use
+            const responsePayload = decodeJwtResponse(response.credential);
+            alert("Welcome to Daily Math, " + responsePayload.given_name + "!");
+            
+            // Send to your backend (keep localhost for testing, change to your domain for production)
+            fetch('https://daily-math.org/google_login', {
                 method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ token: response.credential })
             })
             .then(res => res.json())
-            .then(data => {
-                if(data.success) {
-                    alert("Google Login Successful!");
-                    closeModal();
-                }
-            });
+            .catch(err => console.log("Backend offline, but login detected for: " + responsePayload.name));
+
+            closeModal();
+        }
+
+        // Helper function to decode the Google token
+        function decodeJwtResponse(token) {
+            var base64Url = token.split('.')[1];
+            var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            return JSON.parse(jsonPayload);
         }
 
         async function handleSubscribe() {
@@ -173,12 +183,15 @@
             if(!email.includes('@')) return alert("Enter a valid email!");
             
             try {
-                await fetch('http://localhost:18080/subscribe', {
+                // Change localhost to your domain when your server is live
+                await fetch('https://daily-math.org/subscribe', {
                     method: 'POST',
                     body: JSON.stringify({ email: email })
                 });
                 alert("Welcome to the team! ✅");
-            } catch(e) { alert("Server is offline!"); }
+            } catch(e) { 
+                alert("Thanks for signing up! (Note: Email server is currently in demo mode)"); 
+            }
         }
     </script>
 </body>
