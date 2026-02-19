@@ -45,7 +45,7 @@ bool EmailSystem::sendUpdateNotification(const std::string& recipient, const std
     const char* password = "jhtj ndjx cufz rzcc"; // Your App Password
     
     // --- LINKS ---
-    std::string appLink = "https://your-math-app-link.com"; 
+    std::string appLink = "https://daily-math.org/"; 
     std::string discordLink = "https://discord.gg/kW5f4cbyU"; 
 
     // --- EMAIL CONTENT (With Emojis) ---
