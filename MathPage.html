@@ -5,8 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daily Math App - Daily Math</title>
     
+    <script>
+        window.MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['\\[', '\\]']]
+          },
+          startup: {
+            typeset: false // We tell it to wait until our fetch() is done
+          }
+        };
+    </script>
+    
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
     <script src="https://www.desmos.com/api/v1.9/calculator.js?apiKey=dcb31709b452b1cf9dc269741f40b3c4"></script>
     
     <style>
@@ -78,7 +91,7 @@
         
         <button id="start-btn" class="cat-btn" style="background: var(--success-green); width: 160px; align-self: center;" onclick="startTimer()">START</button>
         
-        <input type="number" id="user-answer" class="answer-input" placeholder="?" disabled>
+        <input type="number" step="any" id="user-answer" class="answer-input" placeholder="?" disabled>
         
         <button id="submit-btn" class="cat-btn" style="background: var(--ucla-gold); color: black; font-weight: bold; width: 200px; align-self: center;" onclick="checkAnswer()" disabled>SUBMIT</button>
         
@@ -146,14 +159,7 @@
     let calcExpr = "";
     let calculator = null;
 
-    // --- MathJax Configuration ---
-    window.MathJax = {
-      tex: {
-        inlineMath: [['$', '$'], ['\\(', '\\)']]
-      }
-    };
-
-    // 1. Unified Fetch Function with Cache-Buster
+    // 1. Fetch questions with Cache-Buster
     async function fetchQuestions() {
         try {
             const ngrokUrl = 'https://keiko-nonpestilent-unconcertedly.ngrok-free.dev/get-questions';
@@ -163,7 +169,8 @@
         } catch (error) {
             console.warn("Server connection failed. Using fallbacks.");
         }
-        // Start on Easy mode once data is ready
+        
+        // Load the easy mode to start
         setMode('easy', document.getElementById('btn-easy'));
     }
 
@@ -204,30 +211,30 @@
 
     // --- Math Game Logic ---
     function setMode(level, el) {
-        // Highlight active button
         document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
         if(el) el.classList.add('active');
 
         const prob = document.getElementById('problem-display');
         const inst = document.getElementById('instruction-text');
 
-        // Search for question in fetched data
+        // Look for the question
+        // Using "|| selected.question" as a safeguard in case the Python API names it differently
         const selected = allQuestions.find(q => q.difficulty.toLowerCase() === level.toLowerCase());
 
         if (selected) {
-            prob.innerHTML = `\\[ ${selected.question_text} \\]`;
+            prob.innerHTML = `\\[ ${selected.question_text || selected.text || selected.question} \\]`;
             currentAnswer = parseFloat(selected.answer);
             inst.innerText = selected.instruction || "";
         } else {
-            // Fallback content if fetch fails or difficulty not found
-            if (level === 'easy') { prob.innerHTML = "\\[ \\sum_{i=5}^{7} i(5i+5) \\]"; currentAnswer = 640; }
-            else if (level === 'medium') { prob.innerHTML = "\\[ y = \\frac{1}{\\sqrt{4 - x^2}} \\]"; currentAnswer = 2; }
-            else { prob.innerHTML = "\\[ \\int_{0}^{2} (3x^2 + 1) \\, dx \\]"; currentAnswer = 10; }
+            // Fallbacks
+            if (level === 'easy') { prob.innerHTML = "\\[ \\sum_{i=5}^{7} i(5i+5) \\]"; currentAnswer = 640; inst.innerText = ""; }
+            else if (level === 'medium') { prob.innerHTML = "\\[ y = \\frac{1}{\\sqrt{4 - x^2}} \\]"; currentAnswer = 2; inst.innerText = "Enter positive upper domain bound"; }
+            else { prob.innerHTML = "\\[ \\int_{0}^{2} (3x^2 + 1) \\, dx \\]"; currentAnswer = 10; inst.innerText = ""; }
         }
 
-        // IMPORTANT: Tell MathJax to render the new LaTeX inside the problem box
+        // Properly trigger MathJax now that it is configured correctly
         if (window.MathJax && window.MathJax.typesetPromise) {
-            window.MathJax.typesetPromise([prob]).catch((err) => console.log(err.message));
+            window.MathJax.typesetPromise([prob]).catch((err) => console.log("MathJax Error:", err.message));
         }
         
         resetGame();
@@ -252,7 +259,6 @@
     function checkAnswer() {
         const userVal = parseFloat(document.getElementById('user-answer').value);
         const feedback = document.getElementById('feedback');
-        // Use a small margin for decimal answers
         if (Math.abs(userVal - currentAnswer) < 0.01) {
             clearInterval(timerInterval); timerRunning = false;
             feedback.innerText = "CORRECT! 🎉";
@@ -276,3 +282,5 @@
 
     window.onload = fetchQuestions;
 </script>
+</body>
+</html>
