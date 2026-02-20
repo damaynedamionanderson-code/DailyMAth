@@ -34,7 +34,6 @@
             background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 24px;
             padding: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-
             width: 100%; max-width: 500px;
         }
 
@@ -154,20 +153,18 @@
       }
     };
 
-    // 1. Fetch questions with Cache-Busting (Updated to use your NGROK URL)
+    // 1. Unified Fetch Function with Cache-Buster
     async function fetchQuestions() {
         try {
-            // REPLACE the URL below with your actual ngrok URL
             const ngrokUrl = 'https://keiko-nonpestilent-unconcertedly.ngrok-free.dev/get-questions';
             const response = await fetch(`${ngrokUrl}?t=${Date.now()}`); 
-            
             allQuestions = await response.json();
             console.log("Questions loaded:", allQuestions);
         } catch (error) {
             console.warn("Server connection failed. Using fallbacks.");
         }
-        // Set initial mode
-        setMode('medium', document.getElementById('btn-medium'));
+        // Start on Easy mode once data is ready
+        setMode('easy', document.getElementById('btn-easy'));
     }
 
     // --- UI Logic ---
@@ -193,7 +190,7 @@
         }
     }
 
-    // --- Calculator Functions ---
+    // --- Calculator Logic ---
     function calcInput(val) { calcExpr += val; document.getElementById('calc-screen').innerText = calcExpr; }
     function clearCalc() { calcExpr = ""; document.getElementById('calc-screen').innerText = "0"; }
     function backspace() { calcExpr = calcExpr.slice(0, -1); document.getElementById('calc-screen').innerText = calcExpr || "0"; }
@@ -207,30 +204,32 @@
 
     // --- Math Game Logic ---
     function setMode(level, el) {
+        // Highlight active button
         document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
         if(el) el.classList.add('active');
 
         const prob = document.getElementById('problem-display');
         const inst = document.getElementById('instruction-text');
 
+        // Search for question in fetched data
         const selected = allQuestions.find(q => q.difficulty.toLowerCase() === level.toLowerCase());
 
         if (selected) {
-            // Using display math delimiters \[ \] for the LaTeX
             prob.innerHTML = `\\[ ${selected.question_text} \\]`;
             currentAnswer = parseFloat(selected.answer);
             inst.innerText = selected.instruction || "";
         } else {
-            // Fallbacks
+            // Fallback content if fetch fails or difficulty not found
             if (level === 'easy') { prob.innerHTML = "\\[ \\sum_{i=5}^{7} i(5i+5) \\]"; currentAnswer = 640; }
             else if (level === 'medium') { prob.innerHTML = "\\[ y = \\frac{1}{\\sqrt{4 - x^2}} \\]"; currentAnswer = 2; }
             else { prob.innerHTML = "\\[ \\int_{0}^{2} (3x^2 + 1) \\, dx \\]"; currentAnswer = 10; }
         }
 
-        // TRIGGER MATHJAX RE-RENDER
-        if (window.MathJax && MathJax.typesetPromise) {
-            MathJax.typesetPromise();
+        // IMPORTANT: Tell MathJax to render the new LaTeX inside the problem box
+        if (window.MathJax && window.MathJax.typesetPromise) {
+            window.MathJax.typesetPromise([prob]).catch((err) => console.log(err.message));
         }
+        
         resetGame();
     }
 
@@ -253,7 +252,8 @@
     function checkAnswer() {
         const userVal = parseFloat(document.getElementById('user-answer').value);
         const feedback = document.getElementById('feedback');
-        if (Math.abs(userVal - currentAnswer) < 0.01) { // Precision check for decimals
+        // Use a small margin for decimal answers
+        if (Math.abs(userVal - currentAnswer) < 0.01) {
             clearInterval(timerInterval); timerRunning = false;
             feedback.innerText = "CORRECT! 🎉";
             feedback.style.color = "var(--success-green)";
