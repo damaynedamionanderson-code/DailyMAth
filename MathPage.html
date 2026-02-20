@@ -34,6 +34,7 @@
             background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 24px;
             padding: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+
             width: 100%; max-width: 500px;
         }
 
@@ -146,19 +147,30 @@
     let calcExpr = "";
     let calculator = null;
 
-    // 1. Fetch questions from the server (Updated Port to 18080)
+    // --- MathJax Configuration ---
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    };
+
+    // 1. Fetch questions with Cache-Busting (Updated to use your NGROK URL)
     async function fetchQuestions() {
         try {
-            const response = await fetch('http://127.0.0.1:18080/get-questions');
+            // REPLACE the URL below with your actual ngrok URL
+            const ngrokUrl = 'https://keiko-nonpestilent-unconcertedly.ngrok-free.dev/get-questions';
+            const response = await fetch(`${ngrokUrl}?t=${Date.now()}`); 
+            
             allQuestions = await response.json();
-            console.log("Questions loaded from server:", allQuestions);
+            console.log("Questions loaded:", allQuestions);
         } catch (error) {
-            console.warn("Server not found at 18080. Using local fallback questions.");
+            console.warn("Server connection failed. Using fallbacks.");
         }
-        // Set initial mode after attempt to fetch
+        // Set initial mode
         setMode('medium', document.getElementById('btn-medium'));
     }
 
+    // --- UI Logic ---
     function toggleTools() {
         const panel = document.getElementById('tool-panel');
         const isOpening = panel.style.display !== 'flex';
@@ -166,10 +178,7 @@
         
         if (isOpening && !calculator) {
             calculator = Desmos.GraphingCalculator(document.getElementById('desmos-container'), {
-                keypad: true,
-                expressions: true,
-                settingsMenu: false,
-                autosize: true
+                keypad: true, expressions: true, settingsMenu: false, autosize: true
             });
         }
     }
@@ -179,8 +188,6 @@
         document.getElementById('graph-calc').style.display = tab === 'graph' ? 'block' : 'none';
         document.getElementById('tab-sci').classList.toggle('active', tab === 'sci');
         document.getElementById('tab-graph').classList.toggle('active', tab === 'graph');
-        
-        // Fix for Desmos rendering correctly when tab is shown
         if (tab === 'graph' && calculator) {
             setTimeout(() => calculator.resize(), 10);
         }
@@ -206,22 +213,24 @@
         const prob = document.getElementById('problem-display');
         const inst = document.getElementById('instruction-text');
 
-        // Look for the question in the fetched data
         const selected = allQuestions.find(q => q.difficulty.toLowerCase() === level.toLowerCase());
 
         if (selected) {
+            // Using display math delimiters \[ \] for the LaTeX
             prob.innerHTML = `\\[ ${selected.question_text} \\]`;
             currentAnswer = parseFloat(selected.answer);
             inst.innerText = selected.instruction || "";
         } else {
-            // ORIGINAL FALLBACKS
-            if (level === 'easy') { prob.innerHTML = "\\[ \\sum_{i=5}^{7} i(5i+5) \\]"; currentAnswer = 640; inst.innerText = ""; }
-            else if (level === 'medium') { prob.innerHTML = "\\[ y = \\frac{1}{\\sqrt{4 - x^2}} \\]"; inst.innerText = "Enter positive upper domain bound"; currentAnswer = 2; }
-            else { prob.innerHTML = "\\[ \\int_{0}^{2} (3x^2 + 1) \\, dx \\]"; currentAnswer = 10; inst.innerText = ""; }
+            // Fallbacks
+            if (level === 'easy') { prob.innerHTML = "\\[ \\sum_{i=5}^{7} i(5i+5) \\]"; currentAnswer = 640; }
+            else if (level === 'medium') { prob.innerHTML = "\\[ y = \\frac{1}{\\sqrt{4 - x^2}} \\]"; currentAnswer = 2; }
+            else { prob.innerHTML = "\\[ \\int_{0}^{2} (3x^2 + 1) \\, dx \\]"; currentAnswer = 10; }
         }
 
-        // Re-render LaTeX
-        if (window.MathJax) MathJax.typesetPromise();
+        // TRIGGER MATHJAX RE-RENDER
+        if (window.MathJax && MathJax.typesetPromise) {
+            MathJax.typesetPromise();
+        }
         resetGame();
     }
 
@@ -244,7 +253,7 @@
     function checkAnswer() {
         const userVal = parseFloat(document.getElementById('user-answer').value);
         const feedback = document.getElementById('feedback');
-        if (userVal === currentAnswer) {
+        if (Math.abs(userVal - currentAnswer) < 0.01) { // Precision check for decimals
             clearInterval(timerInterval); timerRunning = false;
             feedback.innerText = "CORRECT! 🎉";
             feedback.style.color = "var(--success-green)";
