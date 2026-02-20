@@ -16,20 +16,21 @@ bool QuestionManager::loadQuestions(const std::string& filename) {
 
     allQuestions.clear();
     while (std::getline(file, line)) {
-        // Skip truly empty lines or carriage returns (\r)
         if (line.empty() || line == "\r") continue; 
 
         std::stringstream ss(line);
         std::string idStr, diff, ques, ans;
 
-        std::getline(ss, idStr, ',');
-        std::getline(ss, diff, ',');
-        std::getline(ss, ques, ',');
-        std::getline(ss, ans, ',');
+        // Use a more careful extraction
+        if (!std::getline(ss, idStr, ',')) continue;
+        if (!std::getline(ss, diff, ',')) continue;
+        if (!std::getline(ss, ques, ',')) continue;
+        if (!std::getline(ss, ans, ',')) continue;
 
-        // Remove potential hidden spaces or \r from idStr
-        idStr.erase(std::remove(idStr.begin(), idStr.end(), ' '), idStr.end());
-        idStr.erase(std::remove(idStr.begin(), idStr.end(), '\r'), idStr.end());
+        // Clean idStr of any non-numeric characters (like quotes or spaces)
+        idStr.erase(std::remove_if(idStr.begin(), idStr.end(), [](char c) {
+            return !std::isdigit(c);
+        }), idStr.end());
 
         try {
             if (!idStr.empty()) {
@@ -39,26 +40,27 @@ bool QuestionManager::loadQuestions(const std::string& filename) {
                 mq.text = ques;   
                 mq.answer = ans;
                 allQuestions.push_back(mq);
+            } else {
+                // This helps us debug if the first column isn't the ID
+                std::cerr << "⚠️ Row skipped: First column was not a number (Found: " << diff << " instead)" << std::endl;
             }
         } catch (const std::exception& e) {
-            std::cerr << "⚠️ Skipping row with invalid ID: [" << idStr << "]" << std::endl;
             continue;
         }
     }
     
-    std::cout << "✅ Loaded " << allQuestions.size() << " questions successfully." << std::endl;
+    if (allQuestions.empty()) {
+        std::cerr << "❌ Error: 0 questions loaded. Check if your CSV is comma-separated." << std::endl;
+    } else {
+        std::cout << "✅ Successfully loaded " << allQuestions.size() << " questions." << std::endl;
+    }
     return !allQuestions.empty();
-} // <--- THIS BRACE WAS MISSING
+}
 
 MathQuestion QuestionManager::getTodayQuestion() {
     if (allQuestions.empty()) {
-        MathQuestion emptyQ;
-        emptyQ.id = 0;
-        emptyQ.difficulty = "None";
-        emptyQ.text = "No questions loaded";
-        emptyQ.answer = "";
+        MathQuestion emptyQ = {0, "None", "No questions loaded", ""};
         return emptyQ;
     }
-    // Returns the first question in the list
     return allQuestions[0];
 }
