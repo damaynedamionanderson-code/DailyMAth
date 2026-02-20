@@ -1,6 +1,6 @@
 difficulty,question_text,answer,instruction
 
-easy, \sum_{i=5}^{7} i(5 * i + 5),640,Find the value of the summation.
+easy, \sum_{i=5}^{7} i(5 * i^8 + 5),640,Find the value of the summation.
 
 medium,y = \frac{1}{\sqrt{4 - x^{2}}},2,Find The value of the Upper Domain of the function.
 
