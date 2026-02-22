@@ -99,7 +99,7 @@
 
     <div class="card music-card">
         <h3 style="color: var(--ucla-gold); margin: 0 0 8px 0; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px;">Study Beats</h3>
-        <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DX8Uebhn9wzrS" width="100%" height="140" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+        <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DWWQRwui0Ex7u" width="100%" height="140" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
     </div>
 </div>
 
@@ -158,15 +158,30 @@
     let calcExpr = "";
     let calculator = null;
 
-    // 1. Fetch questions with Cache-Buster
+    // 1. Fetch questions from local CSV instead of ngrok
     async function fetchQuestions() {
         try {
-            const ngrokUrl = 'https://keiko-nonpestilent-unconcertedly.ngrok-free.dev/get-questions';
-            const response = await fetch(`${ngrokUrl}?t=${Date.now()}`); 
-            allQuestions = await response.json();
-            console.log("Questions loaded:", allQuestions);
+            // Fetch with cache-buster to ensure we get the newest questions
+            const response = await fetch(`questions.csv?t=${Date.now()}`); 
+            const csvText = await response.text();
+            
+            // Simple CSV parser
+            const lines = csvText.trim().split('\n');
+            allQuestions = lines.map(line => {
+                // Splits by comma but keeps content inside quotes together
+                const parts = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
+                if (!parts) return null;
+                return {
+                    difficulty: parts[0].replace(/"/g, ''),
+                    question_text: parts[1].replace(/"/g, ''),
+                    answer: parts[2].replace(/"/g, ''),
+                    instruction: parts[3] ? parts[3].replace(/"/g, '') : ""
+                };
+            }).filter(q => q !== null);
+
+            console.log("Parsed Questions:", allQuestions);
         } catch (error) {
-            console.warn("Server connection failed. Using fallbacks.");
+            console.error("CSV Fetch Error:", error);
         }
         
         // Load the easy mode to start
@@ -216,24 +231,21 @@
         const prob = document.getElementById('problem-display');
         const inst = document.getElementById('instruction-text');
 
-        // Added safeguard for finding data
-        const selected = allQuestions.find(q => q && q.difficulty && q.difficulty.toLowerCase() === level.toLowerCase());
+        const selected = allQuestions.find(q => q.difficulty.toLowerCase() === level.toLowerCase());
 
         if (selected) {
-            const qText = selected.question_text || selected.text || selected.question || "Error Loading Question";
-            prob.innerHTML = `\\[ ${qText} \\]`;
+            prob.innerHTML = `\\[ ${selected.question_text} \\]`;
             currentAnswer = parseFloat(selected.answer);
             inst.innerText = selected.instruction || "";
         } else {
-            // Fallbacks
-            if (level === 'easy') { prob.innerHTML = "\\[ \\sum_{i=5}^{7} i(5i+5) \\]"; currentAnswer = 640; inst.innerText = ""; }
-            else if (level === 'medium') { prob.innerHTML = "\\[ y = \\frac{1}{\\sqrt{4 - x^2}} \\]"; currentAnswer = 2; inst.innerText = "Enter positive upper domain bound"; }
-            else { prob.innerHTML = "\\[ \\int_{0}^{2} (3x^2 + 1) \\, dx \\]"; currentAnswer = 10; inst.innerText = ""; }
+            // Hardcoded Fallbacks if CSV is empty
+            if (level === 'easy') { prob.innerHTML = "\\[ 5 \\times 12 \\]"; currentAnswer = 60; }
+            else if (level === 'medium') { prob.innerHTML = "\\[ x^2 = 16 \\]"; currentAnswer = 4; }
+            else { prob.innerHTML = "\\[ \\int 2x dx \\]"; currentAnswer = 0; }
         }
 
-        // Properly trigger MathJax
         if (window.MathJax && window.MathJax.typesetPromise) {
-            window.MathJax.typesetPromise([prob]).catch((err) => console.log("MathJax Error:", err.message));
+            window.MathJax.typesetPromise([prob]).catch((err) => console.log(err.message));
         }
         
         resetGame();
