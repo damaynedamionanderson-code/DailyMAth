@@ -1,4 +1,4 @@
 difficulty,question_text,answer,instruction
 easy,"\sum_{i=5}^{7} i(5i + 5)",640,Find the value of the summation. Damayne
 medium,"y = \frac{1}{\sqrt{4 - x^{2}}}",2,Find the value of the upper domain bound of the function.
-hard,"int_{0}^{1} 3x^2 dx",1,Evaluate the integral.
+hard,"\int_{0}^{1} 3x^2 dx",1,Evaluate the integral.
