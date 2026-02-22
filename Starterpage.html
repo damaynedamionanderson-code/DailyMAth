@@ -21,7 +21,8 @@
             color: var(--white);
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
-            height: 100vh; overflow: hidden;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
         /* Fixed Navbar */
@@ -49,7 +50,7 @@
             margin-left: 30px;
             font-weight: 600;
             transition: 0.3s;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
@@ -59,10 +60,14 @@
         }
 
         /* Hero Section */
-        .hero-section { text-align: center; }
+        .hero-section { 
+            text-align: center; 
+            padding: 100px 20px 20px; 
+            max-width: 800px;
+        }
         
-        h1 { font-size: 4rem; margin-bottom: 0; letter-spacing: -2px; }
-        p.tagline { font-size: 1.3rem; opacity: 0.9; margin-bottom: 30px; }
+        h1 { font-size: clamp(2.5rem, 8vw, 4rem); margin-bottom: 0; letter-spacing: -2px; }
+        p.tagline { font-size: 1.2rem; opacity: 0.9; margin-bottom: 30px; }
 
         .math-btn {
             background: var(--ucla-gold); color: var(--dark-blue); border: none;
@@ -73,9 +78,9 @@
         .math-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #b39300; }
 
         .sub-card {
-            margin-top: 50px; background: rgba(255, 255, 255, 0.05);
+            margin: 50px auto 0; background: rgba(255, 255, 255, 0.05);
             padding: 25px; border-radius: 24px; border: 1px solid rgba(39, 116, 174, 0.5);
-            box-shadow: var(--shadow); max-width: 450px;
+            box-shadow: var(--shadow); max-width: 400px;
         }
         
         .sub-group {
@@ -85,12 +90,12 @@
         
         .sub-input {
             background: transparent; border: none; padding: 12px;
-            color: white; outline: none; flex-grow: 1;
+            color: white; outline: none; flex-grow: 1; width: 60%;
         }
 
-        .sub-btn {
+        .sub-btn-main {
             background: var(--ucla-blue); color: white; border: none; 
-            padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold;
+            padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold;
         }
 
         /* Modal Styles */
@@ -100,21 +105,22 @@
             background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
         }
         .modal-content {
-            background: var(--dark-blue); margin: 10% auto; padding: 40px;
-            border: 2px solid var(--ucla-gold); width: 350px; border-radius: 30px; 
-            text-align: center;
+            background: var(--dark-blue); margin: 15vh auto; padding: 40px;
+            border: 2px solid var(--ucla-gold); width: 90%; max-width: 350px; 
+            border-radius: 30px; text-align: center;
         }
     </style>
 </head>
 <body>
-<nav class="navbar">
+
+    <nav class="navbar">
         <a href="index.html" class="nav-logo">🏆 DailyMath</a>
         <div class="nav-links">
             <a href="index.html">Home</a>
-            <a href="content.html">Curriculum</a>
+            <a href="content.html">Content</a>
             <a href="AboutMe.html">About Me</a>
             <a href="https://discord.gg/kW5f4cbyU" target="_blank">Discord</a>
-            <button class="sub-btn" style="background:transparent; border:1px solid var(--ucla-gold); color:var(--ucla-gold); margin-left: 30px;" onclick="openModal()">SIGN IN</button>
+            <button class="sub-btn-main" style="background:transparent; border:1px solid var(--ucla-gold); color:var(--ucla-gold); margin-left: 30px;" onclick="openModal()">SIGN IN</button>
         </div>
     </nav>
 
@@ -129,7 +135,7 @@
             <p style="font-size: 0.9rem; margin-bottom: 15px;">Join 500+ students sharpening their minds.</p>
             <div class="sub-group">
                 <input type="email" id="sub-email" class="sub-input" placeholder="name@email.com">
-                <button class="sub-btn" onclick="handleSubscribe()">Join Now</button>
+                <button class="sub-btn-main" onclick="handleSubscribe()">Join Now</button>
             </div>
         </div>
     </div>
@@ -151,11 +157,16 @@
         function openModal() { document.getElementById('loginModal').style.display = 'block'; }
         function closeModal() { document.getElementById('loginModal').style.display = 'none'; }
         
-        // Add basic subscribe logic
+        function handleCredentialResponse(response) {
+            console.log("Encoded JWT ID token: " + response.credential);
+            alert("Login success! Logic connected.");
+            closeModal();
+        }
+
         async function handleSubscribe() {
             const email = document.getElementById('sub-email').value;
             if(!email.includes('@')) return alert("Enter a valid email!");
-            alert("Subscribed: " + email);
+            alert("Welcome to the team! ✅");
         }
     </script>
 </body>
