@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Curriculum</title>
+    <title>Curriculum | The UCLA Bound Project</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap">
     <style>
         :root {
@@ -24,7 +24,7 @@
             align-items: center; min-height: 100vh;
         }
 
-        /* Standardized Professional Navbar synced with Home Page */
+        /* Clean Navbar - Matching daily-math.org layout */
         .navbar {
             position: fixed; top: 0; left: 0; width: 100%; height: 75px;
             background: rgba(0, 59, 92, 0.95);
@@ -56,22 +56,12 @@
 
         .nav-links a:hover { color: var(--ucla-gold); }
 
-        /* Active indicator for Curriculum page */
+        /* Highlight for current page */
         .nav-links a.active { color: var(--ucla-gold); }
         .nav-links a.active::after {
             content: ''; position: absolute; bottom: -5px; left: 0;
             width: 100%; height: 2px; background: var(--ucla-gold);
         }
-
-        .nav-signin-btn {
-            background: transparent; border: 1px solid var(--ucla-gold);
-            color: var(--ucla-gold); padding: 8px 18px; border-radius: 20px;
-            font-weight: 600; cursor: pointer; transition: 0.3s;
-            text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;
-            margin-left: 10px;
-        }
-
-        .nav-signin-btn:hover { background: var(--ucla-gold); color: var(--dark-blue); }
 
         /* Main Content Container */
         main {
@@ -108,22 +98,10 @@
         
         strong { color: var(--ucla-gold); }
 
-        /* Modal Styles */
-        .modal {
-            display: none; position: fixed; z-index: 2000;
-            left: 0; top: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
-        }
-        .modal-content {
-            background: var(--dark-blue); margin: 15% auto; padding: 40px;
-            border: 2px solid var(--ucla-gold); width: 320px; border-radius: 30px; 
-            text-align: center; box-shadow: var(--shadow);
-        }
-
         /* Responsive Navbar */
-        @media (max-width: 800px) {
+        @media (max-width: 600px) {
             .nav-links { gap: 15px; }
-            .nav-signin-btn { display: none; } /* Hide button on mobile to save space */
+            .nav-logo { font-size: 1.1em; }
         }
     </style>
 </head>
@@ -131,10 +109,11 @@
 
     <nav class="navbar">
         <div class="nav-container">
-            <a href="index.html" class="nav-logo">DAILY MATH <span style="font-weight: 400; color: white;"></span></a>
+            <a href="https://daily-math.org/" class="nav-logo">DAILY MATH <span style="font-weight: 400; color: white;">| UCLA BOUND</span></a>
             <div class="nav-links">
                 <a href="https://daily-math.org/">Home</a>
-                        <a href="https://daily-math.org/AboutMe.html">About Me</a>
+                <a href="content.html" class="active">Curriculum</a>
+                <a href="AboutMe.html">About Me</a>
                 <a href="https://discord.gg/kW5f4cbyU" target="_blank">Discord</a>
             </div>
         </div>
@@ -168,18 +147,10 @@
 
         <p>By engaging with this application daily, I am building the <strong>technical stamina and analytical discipline</strong> required of a future Bruin. Every session is a step toward my goal of contributing to the mathematical sciences at UCLA.</p>
     </main>
-    <footer>
-        <p>&copy; 2026 Daily Math App</p>
-    </footer>
 
-    <script>
-        function openModal() { document.getElementById('signInModal').style.display = 'block'; }
-        function closeModal() { document.getElementById('signInModal').style.display = 'none'; }
-        window.onclick = function(event) {
-            let modal = document.getElementById('signInModal');
-            if (event.target == modal) { closeModal(); }
-        }
-    </script>
+    <footer>
+        <p>&copy; 2026 Daily Math App | Future UCLA Applied Math Major</p>
+    </footer>
 
 </body>
 </html>
