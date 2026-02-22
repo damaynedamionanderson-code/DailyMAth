@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Math App - Daily Math</title>
+    
+    <script>
+        window.MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['\\[', '\\]']]
+          },
+          startup: {
+            typeset: false
+          }
+        };
+    </script>
+    
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://www.desmos.com/api/v1.9/calculator.js?apiKey=dcb31709b452b1cf9dc269741f40b3c4"></script>
+    
+    <style>
+        :root {
+            --ucla-blue: #2774AE;
+            --ucla-gold: #FFD100;
+            --dark-blue: #003B5C;
+            --white: #FFFFFF;
+            --success-green: #4CAF50;
+            --error-red: #f44336;
+        }
+
+        body {
+            background-color: var(--dark-blue);
+            margin: 0; display: flex; justify-content: center; align-items: center;
+            height: 100vh; font-family: 'Segoe UI', sans-serif; color: var(--white); overflow: hidden;
+        }
+
+        .app-container {
+            display: flex; flex-direction: column; align-items: center;
+            gap: 15px; padding: 20px; width: 95vw;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 24px;
+            padding: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            width: 100%; max-width: 500px;
+        }
+
+        .math-card { min-height: 350px; display: flex; flex-direction: column; justify-content: center; text-align: center; }
+        
+        .music-card { height: 140px; padding: 10px 15px; overflow: hidden; }
+
+        .problem-area { font-size: 2.5rem; min-height: 100px; display: flex; align-items: center; justify-content: center; margin: 15px 0; }
+        .blurred { filter: blur(20px); pointer-events: none; }
+        
+        .timer-display { font-family: monospace; font-size: 1.5rem; color: var(--ucla-gold); margin-bottom: 10px; }
+        .answer-input { background: rgba(255, 255, 255, 0.08); border: 2px solid var(--ucla-blue); border-radius: 12px; padding: 10px; color: white; font-size: 1.5rem; width: 120px; text-align: center; margin: 10px auto; }
+        
+        .cat-btn { background: none; border: 1px solid var(--ucla-blue); color: white; padding: 8px 15px; border-radius: 20px; cursor: pointer; margin: 5px; }
+        .cat-btn.active { background: var(--ucla-blue); border-color: var(--ucla-gold); }
+
+        .side-btn { position: fixed; right: 20px; bottom: 20px; width: 60px; height: 60px; border-radius: 50%; border: none; cursor: pointer; font-weight: bold; z-index: 1001; background: var(--ucla-gold); color: var(--dark-blue); font-size: 1.5rem; }
+        
+        .floating-panel { position: fixed; right: 90px; bottom: 20px; width: 500px; height: 600px; background: rgba(0, 59, 92, 0.98); border: 2px solid var(--ucla-blue); border-radius: 20px; padding: 20px; display: none; flex-direction: column; z-index: 1000; }
+        
+        .calc-display { background: #000; color: var(--ucla-gold); padding: 15px; text-align: right; border-radius: 10px; font-family: monospace; font-size: 1.5rem; margin-bottom: 10px; min-height: 40px; }
+        .calc-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+        .calc-btn { background: rgba(255,255,255,0.1); border: none; color: white; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; }
+        .op-btn { color: var(--ucla-gold); font-weight: bold; background: rgba(39, 116, 174, 0.3); }
+        #desmos-container { width: 100%; height: 450px; border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="card math-card">
+        <div class="timer-display" id="stopwatch">00:00.0</div>
+        
+        <div class="category-container">
+            <button id="btn-easy" class="cat-btn" onclick="setMode('easy', this)">Easy</button>
+            <button id="btn-medium" class="cat-btn" onclick="setMode('medium', this)">Medium</button>
+            <button id="btn-hard" class="cat-btn" onclick="setMode('hard', this)">Hard</button>
+        </div>
+
+        <div id="instruction-text" style="margin-top:10px; color: #aaa; font-size: 0.8rem;"></div>
+        <div id="problem-display" class="problem-area blurred">2 + 2 = ?</div>
+        
+        <button id="start-btn" class="cat-btn" style="background: var(--success-green); width: 160px; align-self: center;" onclick="startTimer()">START</button>
+        
+        <input type="number" step="any" id="user-answer" class="answer-input" placeholder="?" disabled>
+        
+        <button id="submit-btn" class="cat-btn" style="background: var(--ucla-gold); color: black; font-weight: bold; width: 200px; align-self: center;" onclick="checkAnswer()" disabled>SUBMIT</button>
+        
+        <div id="feedback" style="margin-top: 10px; font-weight: bold;"></div>
+    </div>
+
+    <div class="card music-card">
+        <h3 style="color: var(--ucla-gold); margin: 0 0 8px 0; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px;">Study Beats</h3>
+        <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DX8Uebhn9wzrS" width="100%" height="140" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+    </div>
+</div>
+
+<button class="side-btn" onclick="toggleTools()">±</button>
+
+<div id="tool-panel" class="floating-panel">
+    <div style="display:flex; justify-content: space-around; margin-bottom:15px;">
+        <button class="cat-btn active" id="tab-sci" onclick="switchTab('sci')">Scientific</button>
+        <button class="cat-btn" id="tab-graph" onclick="switchTab('graph')">Desmos Graphing</button>
+    </div>
+
+    <div id="sci-calc">
+        <div class="calc-display" id="calc-screen">0</div>
+        <div class="calc-grid">
+            <button class="calc-btn op-btn" onclick="calcInput('Math.sin(')">sin</button>
+            <button class="calc-btn op-btn" onclick="calcInput('Math.cos(')">cos</button>
+            <button class="calc-btn op-btn" onclick="calcInput('Math.tan(')">tan</button>
+            <button class="calc-btn op-btn" onclick="calcInput('Math.PI')">π</button>
+            <button class="calc-btn op-btn" style="background:var(--error-red)" onclick="clearCalc()">AC</button>
+            <button class="calc-btn op-btn" onclick="calcInput('Math.log10(')">log</button>
+            <button class="calc-btn op-btn" onclick="calcInput('Math.exp(')">eˣ</button>
+            <button class="calc-btn op-btn" onclick="calcInput('Math.sqrt(')">√</button>
+            <button class="calc-btn op-btn" onclick="calcInput('**')">xʸ</button>
+            <button class="calc-btn op-btn" onclick="calcInput('/')">÷</button>
+            <button class="calc-btn" onclick="calcInput('7')">7</button>
+            <button class="calc-btn" onclick="calcInput('8')">8</button>
+            <button class="calc-btn" onclick="calcInput('9')">9</button>
+            <button class="calc-btn op-btn" onclick="calcInput('*')">×</button>
+            <button class="calc-btn op-btn" onclick="calcInput('(')">(</button>
+            <button class="calc-btn" onclick="calcInput('4')">4</button>
+            <button class="calc-btn" onclick="calcInput('5')">5</button>
+            <button class="calc-btn" onclick="calcInput('6')">6</button>
+            <button class="calc-btn op-btn" onclick="calcInput('-')">−</button>
+            <button class="calc-btn op-btn" onclick="calcInput(')')">)</button>
+            <button class="calc-btn" onclick="calcInput('1')">1</button>
+            <button class="calc-btn" onclick="calcInput('2')">2</button>
+            <button class="calc-btn" onclick="calcInput('3')">3</button>
+            <button class="calc-btn op-btn" onclick="calcInput('+')">+</button>
+            <button class="calc-btn op-btn" style="background:var(--ucla-gold); color:black;" onclick="solveCalc()">=</button>
+            <button class="calc-btn" onclick="calcInput('0')" style="grid-column: span 2">0</button>
+            <button class="calc-btn" onclick="calcInput('.')">.</button>
+            <button class="calc-btn" onclick="calcInput('Math.E')">e</button>
+            <button class="calc-btn" onclick="backspace()">⌫</button>
+        </div>
+    </div>
+
+    <div id="graph-calc" style="display:none;">
+        <div id="desmos-container"></div>
+    </div>
+</div>
+
+<script>
+    let currentAnswer = 0;
+    let allQuestions = [];
+    let timerInterval, startTime, timerRunning = false;
+    let calcExpr = "";
+    let calculator = null;
+
+    // 1. Fetch questions with Cache-Buster
+    async function fetchQuestions() {
+        try {
+            const ngrokUrl = 'https://keiko-nonpestilent-unconcertedly.ngrok-free.dev/get-questions';
+            const response = await fetch(`${ngrokUrl}?t=${Date.now()}`); 
+            allQuestions = await response.json();
+            console.log("Questions loaded:", allQuestions);
+        } catch (error) {
+            console.warn("Server connection failed. Using fallbacks.");
+        }
+        
+        // Load the easy mode to start
+        setMode('easy', document.getElementById('btn-easy'));
+    }
+
+    // --- UI Logic ---
+    function toggleTools() {
+        const panel = document.getElementById('tool-panel');
+        const isOpening = panel.style.display !== 'flex';
+        panel.style.display = isOpening ? 'flex' : 'none';
+        
+        if (isOpening && !calculator) {
+            calculator = Desmos.GraphingCalculator(document.getElementById('desmos-container'), {
+                keypad: true, expressions: true, settingsMenu: false, autosize: true
+            });
+        }
+    }
+
+    function switchTab(tab) {
+        document.getElementById('sci-calc').style.display = tab === 'sci' ? 'block' : 'none';
+        document.getElementById('graph-calc').style.display = tab === 'graph' ? 'block' : 'none';
+        document.getElementById('tab-sci').classList.toggle('active', tab === 'sci');
+        document.getElementById('tab-graph').classList.toggle('active', tab === 'graph');
+        if (tab === 'graph' && calculator) {
+            setTimeout(() => calculator.resize(), 10);
+        }
+    }
+
+    // --- Calculator Logic ---
+    function calcInput(val) { calcExpr += val; document.getElementById('calc-screen').innerText = calcExpr; }
+    function clearCalc() { calcExpr = ""; document.getElementById('calc-screen').innerText = "0"; }
+    function backspace() { calcExpr = calcExpr.slice(0, -1); document.getElementById('calc-screen').innerText = calcExpr || "0"; }
+    function solveCalc() {
+        try {
+            let res = eval(calcExpr);
+            document.getElementById('calc-screen').innerText = res;
+            calcExpr = res.toString();
+        } catch(e) { document.getElementById('calc-screen').innerText = "Error"; calcExpr = ""; }
+    }
+
+    // --- Math Game Logic ---
+    function setMode(level, el) {
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+        if(el) el.classList.add('active');
+
+        const prob = document.getElementById('problem-display');
+        const inst = document.getElementById('instruction-text');
+
+        // Added safeguard for finding data
+        const selected = allQuestions.find(q => q && q.difficulty && q.difficulty.toLowerCase() === level.toLowerCase());
+
+        if (selected) {
+            const qText = selected.question_text || selected.text || selected.question || "Error Loading Question";
+            prob.innerHTML = `\\[ ${qText} \\]`;
+            currentAnswer = parseFloat(selected.answer);
+            inst.innerText = selected.instruction || "";
+        } else {
+            // Fallbacks
+            if (level === 'easy') { prob.innerHTML = "\\[ \\sum_{i=5}^{7} i(5i+5) \\]"; currentAnswer = 640; inst.innerText = ""; }
+            else if (level === 'medium') { prob.innerHTML = "\\[ y = \\frac{1}{\\sqrt{4 - x^2}} \\]"; currentAnswer = 2; inst.innerText = "Enter positive upper domain bound"; }
+            else { prob.innerHTML = "\\[ \\int_{0}^{2} (3x^2 + 1) \\, dx \\]"; currentAnswer = 10; inst.innerText = ""; }
+        }
+
+        // Properly trigger MathJax
+        if (window.MathJax && window.MathJax.typesetPromise) {
+            window.MathJax.typesetPromise([prob]).catch((err) => console.log("MathJax Error:", err.message));
+        }
+        
+        resetGame();
+    }
+
+    function startTimer() {
+        if (timerRunning) return;
+        timerRunning = true; startTime = Date.now();
+        timerInterval = setInterval(() => {
+            const diff = Date.now() - startTime;
+            const mins = Math.floor(diff / 60000).toString().padStart(2, '0');
+            const secs = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
+            const ms = Math.floor((diff % 1000) / 100);
+            document.getElementById('stopwatch').innerText = `${mins}:${secs}.${ms}`;
+        }, 100);
+        document.getElementById('problem-display').classList.remove('blurred');
+        document.getElementById('user-answer').disabled = false;
+        document.getElementById('submit-btn').disabled = false;
+        document.getElementById('start-btn').style.display = 'none';
+        document.getElementById('user-answer').focus();
+    }
+
+    function checkAnswer() {
+        const userVal = parseFloat(document.getElementById('user-answer').value);
+        const feedback = document.getElementById('feedback');
+        if (Math.abs(userVal - currentAnswer) < 0.01) {
+            clearInterval(timerInterval); timerRunning = false;
+            feedback.innerText = "CORRECT! 🎉";
+            feedback.style.color = "var(--success-green)";
+        } else {
+            feedback.innerText = "Incorrect! ❌";
+            feedback.style.color = "var(--error-red)";
+        }
+    }
+
+    function resetGame() {
+        clearInterval(timerInterval); timerRunning = false;
+        document.getElementById('stopwatch').innerText = "00:00.0";
+        document.getElementById('problem-display').classList.add('blurred');
+        document.getElementById('user-answer').disabled = true;
+        document.getElementById('user-answer').value = "";
+        document.getElementById('submit-btn').disabled = true;
+        document.getElementById('start-btn').style.display = 'block';
+        document.getElementById('feedback').innerText = "";
+    }
+
+    window.onload = fetchQuestions;
+</script>
+</body>
+</html>
