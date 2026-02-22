@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daily Math App</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
@@ -25,11 +26,11 @@
 
         /* Navbar */
         .navbar {
-            position: fixed; top: 0; width: 100%; height: 70px;
-            background: rgba(0, 59, 92, 0.9);
+            position: fixed; top: 0; width: 100%; height: 75px;
+            background: rgba(0, 59, 92, 0.95);
             display: flex; justify-content: space-between; align-items: center;
             padding: 0 40px; box-sizing: border-box; z-index: 1000;
-            backdrop-filter: blur(10px); border-bottom: 2px solid var(--ucla-blue);
+            backdrop-filter: blur(15px); border-bottom: 3px solid var(--ucla-blue);
         }
 
         .nav-logo { font-size: 1.6em; font-weight: 800; color: var(--ucla-gold); text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
@@ -42,16 +43,19 @@
         .nav-links a {
             color: var(--white);
             text-decoration: none;
-            margin-left: 30px;
+            margin-left: 25px;
             font-weight: 600;
             transition: 0.3s;
+            font-size: 0.95rem;
         }
 
         .nav-links a:hover {
             color: var(--ucla-gold);
         }
 
-        /* Themed Subscription Box */
+        /* Hero and Content Styling */
+        .hero-section { text-align: center; z-index: 1; }
+        
         .sub-card {
             margin-top: 50px;
             background: rgba(255, 255, 255, 0.05);
@@ -84,6 +88,15 @@
         }
         .sub-btn:hover { background: var(--ucla-gold); color: var(--dark-blue); }
 
+        .math-btn {
+            background: var(--ucla-gold); color: var(--dark-blue); border: none;
+            padding: 20px 45px; font-size: 1.2rem; font-weight: 900;
+            border-radius: 16px; cursor: pointer; box-shadow: 0 6px 0 #b39300;
+            transition: 0.1s;
+            margin-top: 20px;
+        }
+        .math-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #b39300; }
+
         /* Modal */
         .modal {
             display: none; position: fixed; z-index: 2000;
@@ -95,14 +108,6 @@
             border: 2px solid var(--ucla-gold); width: 350px; border-radius: 30px; 
             text-align: center; box-shadow: var(--shadow);
         }
-
-        .math-btn {
-            background: var(--ucla-gold); color: var(--dark-blue); border: none;
-            padding: 20px 45px; font-size: 1.2rem; font-weight: 900;
-            border-radius: 16px; cursor: pointer; box-shadow: 0 6px 0 #b39300;
-            transition: 0.1s;
-        }
-        .math-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #b39300; }
     </style>
 </head>
 <body>
@@ -110,14 +115,15 @@
     <nav class="navbar">
         <div class="nav-logo">🏆 DailyMath</div>
         <div class="nav-links">
-            <a href="content.html"
+            <a href="index.html">Home</a>
+            <a href="content.html">Content</a>
             <a href="AboutMe.html">About Me</a>
-            <a href="https://discord.gg/kW5f4cbyU">Discord</a>
-            <button class="sub-btn" style="background:transparent; border:1px solid var(--ucla-gold); color:var(--ucla-gold); margin-left: 30px;" onclick="openModal()">SIGN IN</button>
+            <a href="https://discord.gg/kW5f4cbyU" target="_blank">Discord</a>
+            <button class="sub-btn" style="background:transparent; border:1px solid var(--ucla-gold); color:var(--ucla-gold); margin-left: 20px;" onclick="openModal()">SIGN IN</button>
         </div>
     </nav>
 
-    <div class="hero-section" style="text-align:center;">
+    <div class="hero-section">
         <h1 style="font-size: 4rem; margin-bottom: 0;">Master Math Daily.</h1>
         <p style="font-size: 1.3rem; opacity: 0.9;">The smartest way to start your morning.</p>
         
@@ -136,15 +142,12 @@
     <div id="loginModal" class="modal">
         <div class="modal-content">
             <h2 style="color: var(--ucla-gold); margin-bottom: 30px;">Sign In</h2>
-            
             <div id="g_id_onload"
                  data-client_id="YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com"
                  data-callback="handleCredentialResponse">
             </div>
             <div class="g_id_signin" data-type="standard"></div>
-
             <hr style="margin: 30px 0; border: 0; border-top: 1px solid rgba(255,255,255,0.1);">
-            
             <button onclick="closeModal()" style="background:none; border:none; color:white; cursor:pointer; opacity:0.6;">Close</button>
         </div>
     </div>
@@ -155,7 +158,6 @@
 
         function handleCredentialResponse(response) {
             console.log("Encoded JWT ID token: " + response.credential);
-            
             fetch('http://localhost:18080/google_login', {
                 method: 'POST',
                 body: JSON.stringify({ token: response.credential })
