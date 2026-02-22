@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Daily Math App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Math App | Home</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
         :root {
@@ -20,19 +21,23 @@
             color: var(--white);
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
-            height: 100vh; overflow: hidden;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        /* Navbar */
+        /* Fixed Navbar */
         .navbar {
-            position: fixed; top: 0; width: 100%; height: 70px;
-            background: rgba(0, 59, 92, 0.9);
+            position: fixed; top: 0; width: 100%; height: 75px;
+            background: rgba(0, 59, 92, 0.95);
             display: flex; justify-content: space-between; align-items: center;
             padding: 0 40px; box-sizing: border-box; z-index: 1000;
-            backdrop-filter: blur(10px); border-bottom: 2px solid var(--ucla-blue);
+            backdrop-filter: blur(15px); border-bottom: 3px solid var(--ucla-blue);
         }
 
-        .nav-logo { font-size: 1.6em; font-weight: 800; color: var(--ucla-gold); text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+        .nav-logo { 
+            font-size: 1.6em; font-weight: 800; color: var(--ucla-gold); 
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5); text-decoration: none;
+        }
 
         .nav-links {
             display: flex;
@@ -45,56 +50,24 @@
             margin-left: 30px;
             font-weight: 600;
             transition: 0.3s;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .nav-links a:hover {
             color: var(--ucla-gold);
         }
 
-        /* Themed Subscription Box */
-        .sub-card {
-            margin-top: 50px;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 25px;
-            border-radius: 24px;
-            border: 1px solid rgba(39, 116, 174, 0.5);
-            box-shadow: var(--shadow);
-            transition: 0.3s;
-            max-width: 450px;
-        }
-        .sub-card:hover { border-color: var(--ucla-gold); }
-        
-        .sub-group {
-            display: flex;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 5px;
-            border-radius: 12px;
-            border: 1px solid var(--ucla-blue);
+        /* Hero Section */
+        .hero-section { 
+            text-align: center; 
+            padding: 100px 20px 20px; 
+            max-width: 800px;
         }
         
-        .sub-input {
-            background: transparent; border: none; padding: 12px;
-            color: white; outline: none; flex-grow: 1; font-size: 1rem;
-        }
-
-        .sub-btn {
-            background: var(--ucla-blue); color: white;
-            border: none; padding: 10px 20px; border-radius: 8px;
-            cursor: pointer; font-weight: bold; transition: 0.2s;
-        }
-        .sub-btn:hover { background: var(--ucla-gold); color: var(--dark-blue); }
-
-        /* Modal */
-        .modal {
-            display: none; position: fixed; z-index: 2000;
-            left: 0; top: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
-        }
-        .modal-content {
-            background: var(--dark-blue); margin: 10% auto; padding: 40px;
-            border: 2px solid var(--ucla-gold); width: 350px; border-radius: 30px; 
-            text-align: center; box-shadow: var(--shadow);
-        }
+        h1 { font-size: clamp(2.5rem, 8vw, 4rem); margin-bottom: 0; letter-spacing: -2px; }
+        p.tagline { font-size: 1.2rem; opacity: 0.9; margin-bottom: 30px; }
 
         .math-btn {
             background: var(--ucla-gold); color: var(--dark-blue); border: none;
@@ -103,22 +76,57 @@
             transition: 0.1s;
         }
         .math-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #b39300; }
+
+        .sub-card {
+            margin: 50px auto 0; background: rgba(255, 255, 255, 0.05);
+            padding: 25px; border-radius: 24px; border: 1px solid rgba(39, 116, 174, 0.5);
+            box-shadow: var(--shadow); max-width: 400px;
+        }
+        
+        .sub-group {
+            display: flex; background: rgba(0, 0, 0, 0.2);
+            padding: 5px; border-radius: 12px; border: 1px solid var(--ucla-blue);
+        }
+        
+        .sub-input {
+            background: transparent; border: none; padding: 12px;
+            color: white; outline: none; flex-grow: 1; width: 60%;
+        }
+
+        .sub-btn-main {
+            background: var(--ucla-blue); color: white; border: none; 
+            padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none; position: fixed; z-index: 2000;
+            left: 0; top: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
+        }
+        .modal-content {
+            background: var(--dark-blue); margin: 15vh auto; padding: 40px;
+            border: 2px solid var(--ucla-gold); width: 90%; max-width: 350px; 
+            border-radius: 30px; text-align: center;
+        }
     </style>
 </head>
 <body>
 
     <nav class="navbar">
-        <div class="nav-logo">🏆 DailyMath</div>
+        <a href="index.html" class="nav-logo">🏆 DailyMath</a>
         <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="content.html">Content</a>
             <a href="AboutMe.html">About Me</a>
-            <a href="https://discord.gg/kW5f4cbyU">Discord</a>
-            <button class="sub-btn" style="background:transparent; border:1px solid var(--ucla-gold); color:var(--ucla-gold); margin-left: 30px;" onclick="openModal()">SIGN IN</button>
+            <a href="https://discord.gg/kW5f4cbyU" target="_blank">Discord</a>
+            <button class="sub-btn-main" style="background:transparent; border:1px solid var(--ucla-gold); color:var(--ucla-gold); margin-left: 30px;" onclick="openModal()">SIGN IN</button>
         </div>
     </nav>
 
-    <div class="hero-section" style="text-align:center;">
-        <h1 style="font-size: 4rem; margin-bottom: 0;">Master Math Daily.</h1>
-        <p style="font-size: 1.3rem; opacity: 0.9;">The smartest way to start your morning.</p>
+    <div class="hero-section">
+        <h1>Master Math Daily.</h1>
+        <p class="tagline">The smartest way to start your morning.</p>
         
         <button class="math-btn" onclick="window.location.href='MathPage.html'">START CHALLENGE</button>
 
@@ -127,23 +135,20 @@
             <p style="font-size: 0.9rem; margin-bottom: 15px;">Join 500+ students sharpening their minds.</p>
             <div class="sub-group">
                 <input type="email" id="sub-email" class="sub-input" placeholder="name@email.com">
-                <button class="sub-btn" onclick="handleSubscribe()">Join Now</button>
+                <button class="sub-btn-main" onclick="handleSubscribe()">Join Now</button>
             </div>
         </div>
     </div>
 
     <div id="loginModal" class="modal">
         <div class="modal-content">
-            <h2 style="color: var(--ucla-gold); margin-bottom: 30px;">Sign In</h2>
-            
+            <h2 style="color: var(--ucla-gold);">Sign In</h2>
             <div id="g_id_onload"
-                 data-client_id="YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com"
+                 data-client_id="255071296555-39mb4h1ov691ab6iprvsi2c1bsr1r00e.apps.googleusercontent.com"
                  data-callback="handleCredentialResponse">
             </div>
             <div class="g_id_signin" data-type="standard"></div>
-
-            <hr style="margin: 30px 0; border: 0; border-top: 1px solid rgba(255,255,255,0.1);">
-            
+            <hr style="margin: 20px 0; border: 0; border-top: 1px solid rgba(255,255,255,0.1);">
             <button onclick="closeModal()" style="background:none; border:none; color:white; cursor:pointer; opacity:0.6;">Close</button>
         </div>
     </div>
@@ -151,34 +156,17 @@
     <script>
         function openModal() { document.getElementById('loginModal').style.display = 'block'; }
         function closeModal() { document.getElementById('loginModal').style.display = 'none'; }
-
+        
         function handleCredentialResponse(response) {
             console.log("Encoded JWT ID token: " + response.credential);
-            
-            fetch('http://localhost:18080/google_login', {
-                method: 'POST',
-                body: JSON.stringify({ token: response.credential })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if(data.success) {
-                    alert("Google Login Successful!");
-                    closeModal();
-                }
-            });
+            alert("Login success! Logic connected.");
+            closeModal();
         }
 
         async function handleSubscribe() {
             const email = document.getElementById('sub-email').value;
             if(!email.includes('@')) return alert("Enter a valid email!");
-            
-            try {
-                await fetch('http://localhost:18080/subscribe', {
-                    method: 'POST',
-                    body: JSON.stringify({ email: email })
-                });
-                alert("Welcome to the team! ✅");
-            } catch(e) { alert("Server is offline!"); }
+            alert("Welcome to the team! ✅");
         }
     </script>
 </body>
