@@ -1,8 +1,14 @@
 #!/bin/bash
-echo "🔧 Starting the Daily Math Update..."
+echo "🔧 Syncing with GitHub..."
 git pull origin main --rebase
+
+echo "📦 Staging your new problems and emails..."
 git add .
+
 MESSAGE=${1:-"Daily Math Update"}
 git commit -m "$MESSAGE"
+
+echo "🚀 Deploying to daily-math.org..."
 git push origin main
-echo "✅ Success! Your changes are being deployed."
+
+echo "✅ Success! Site updated."
