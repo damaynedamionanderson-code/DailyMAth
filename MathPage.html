@@ -19,7 +19,6 @@
     
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script src="https://www.desmos.com/api/v1.9/calculator.js?apiKey=dcb31709b452b1cf9dc269741f40b3c4"></script>
     
     <style>
         :root {
@@ -50,35 +49,33 @@
             border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 24px;
             padding: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.4);
             width: 100%; max-width: 500px;
+            display: flex; flex-direction: column; align-items: center;
         }
 
-        .math-card { min-height: 380px; display: flex; flex-direction: column; justify-content: center; text-align: center; }
+        .math-card { min-height: 380px; justify-content: center; text-align: center; }
         
         .music-card { 
             padding: 15px; 
             border: 1px solid rgba(255, 209, 0, 0.2);
-            /* Ensure the player has enough room to breathe */
             min-height: 160px; 
+            width: 100%;
+            box-sizing: border-box;
         }
 
-        .problem-area { font-size: 2.5rem; min-height: 120px; display: flex; align-items: center; justify-content: center; margin: 15px 0; }
+        .problem-area { font-size: 2.5rem; min-height: 120px; display: flex; align-items: center; justify-content: center; margin: 15px 0; width: 100%; }
         .blurred { filter: blur(20px); pointer-events: none; }
         
         .timer-display { font-family: 'Courier New', monospace; font-size: 1.8rem; color: var(--ucla-gold); margin-bottom: 10px; font-weight: bold;}
-        .answer-input { background: rgba(255, 255, 255, 0.08); border: 2px solid var(--ucla-blue); border-radius: 12px; padding: 12px; color: white; font-size: 1.5rem; width: 140px; text-align: center; margin: 10px auto; outline: none; }
+        
+        /* Updated Input to allow more space for expressions */
+        .answer-input { background: rgba(255, 255, 255, 0.08); border: 2px solid var(--ucla-blue); border-radius: 12px; padding: 12px; color: white; font-size: 1.5rem; width: 200px; text-align: center; margin: 10px auto; outline: none; font-family: 'Courier New', monospace; }
         
         .cat-btn { background: none; border: 1px solid var(--ucla-blue); color: white; padding: 8px 18px; border-radius: 20px; cursor: pointer; margin: 5px; transition: 0.3s; }
         .cat-btn.active { background: var(--ucla-blue); border-color: var(--ucla-gold); }
 
-        .side-btn { position: fixed; right: 25px; bottom: 25px; width: 65px; height: 65px; border-radius: 50%; border: none; cursor: pointer; font-weight: bold; z-index: 1001; background: var(--ucla-gold); color: var(--dark-blue); font-size: 1.8rem; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
-        
-        .floating-panel { position: fixed; right: 100px; bottom: 25px; width: 500px; height: 620px; background: rgba(0, 59, 92, 0.98); border: 2px solid var(--ucla-blue); border-radius: 20px; padding: 20px; display: none; flex-direction: column; z-index: 1000; }
-        
-        .calc-display { background: #000; color: var(--ucla-gold); padding: 15px; text-align: right; border-radius: 10px; font-family: monospace; font-size: 1.8rem; margin-bottom: 10px; min-height: 45px; }
-        .calc-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
-        .calc-btn { background: rgba(255,255,255,0.1); border: none; color: white; padding: 12px; border-radius: 8px; cursor: pointer; }
-        .op-btn { color: var(--ucla-gold); font-weight: bold; background: rgba(39, 116, 174, 0.3); }
-        
+        .discord-link { margin-top: 15px; color: var(--ucla-gold); text-decoration: none; font-weight: bold; font-size: 0.95rem; border: 1px solid var(--ucla-gold); padding: 8px 16px; border-radius: 12px; transition: 0.3s; }
+        .discord-link:hover { background: var(--ucla-gold); color: var(--dark-blue); }
+
         .pulse-icon { width: 8px; height: 8px; background-color: var(--ucla-gold); border-radius: 50%; display: inline-block; animation: pulse 2s infinite; margin-right: 8px; }
         @keyframes pulse {
             0% { box-shadow: 0 0 0 0 rgba(255, 209, 0, 0.7); }
@@ -104,21 +101,23 @@
         
         <button id="start-btn" class="cat-btn" style="background: var(--success-green); width: 160px; align-self: center; border: none; font-weight: bold;" onclick="startTimer()">START</button>
         
-        <input type="number" step="any" id="user-answer" class="answer-input" placeholder="?" disabled>
+        <input type="text" id="user-answer" class="answer-input" placeholder="Your Answer" disabled>
         
         <button id="submit-btn" class="cat-btn" style="background: var(--ucla-gold); color: black; font-weight: bold; width: 200px; align-self: center; border: none;" onclick="checkAnswer()" disabled>SUBMIT</button>
         
         <div id="feedback" style="margin-top: 15px; font-weight: bold; font-size: 1.1rem;"></div>
+        
+        <a href="https://discord.gg/kW5f4cbyU" target="_blank" class="discord-link">Solutions in Discord</a>
     </div>
 
     <div class="card music-card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; width: 100%;">
             <h3 style="color: var(--ucla-gold); margin: 0; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; display: flex; align-items: center;">
                 <span class="pulse-icon"></span> Study Beats
             </h3>
             <span style="font-size: 0.6rem; color: rgba(255,255,255,0.4);">SPOTIFY PLAYER</span>
         </div>
-        <div style="box-shadow: 0 4px 15px rgba(0,0,0,0.3); border-radius: 12px; overflow: hidden; background: #000;">
+        <div style="box-shadow: 0 4px 15px rgba(0,0,0,0.3); border-radius: 12px; overflow: hidden; background: #000; width: 100%;">
             <iframe 
                 style="border-radius:12px;" 
                 src="https://open.spotify.com/embed/playlist/4wPhsqB77Z4Q22RTAX1Dij?utm_source=generator" 
@@ -133,60 +132,11 @@
     </div>
 </div>
 
-<button class="side-btn" onclick="toggleTools()">±</button>
-
-<div id="tool-panel" class="floating-panel">
-    <div style="display:flex; justify-content: space-around; margin-bottom:15px;">
-        <button class="cat-btn active" id="tab-sci" onclick="switchTab('sci')">Scientific</button>
-        <button class="cat-btn" id="tab-graph" onclick="switchTab('graph')">Desmos Graphing</button>
-    </div>
-
-    <div id="sci-calc">
-        <div class="calc-display" id="calc-screen">0</div>
-        <div class="calc-grid">
-            <button class="calc-btn op-btn" onclick="calcInput('Math.sin(')">sin</button>
-            <button class="calc-btn op-btn" onclick="calcInput('Math.cos(')">cos</button>
-            <button class="calc-btn op-btn" onclick="calcInput('Math.tan(')">tan</button>
-            <button class="calc-btn op-btn" onclick="calcInput('Math.PI')">π</button>
-            <button class="calc-btn op-btn" style="background:var(--error-red)" onclick="clearCalc()">AC</button>
-            <button class="calc-btn op-btn" onclick="calcInput('Math.log10(')">log</button>
-            <button class="calc-btn op-btn" onclick="calcInput('Math.exp(')">eˣ</button>
-            <button class="calc-btn op-btn" onclick="calcInput('Math.sqrt(')">√</button>
-            <button class="calc-btn op-btn" onclick="calcInput('**')">xʸ</button>
-            <button class="calc-btn op-btn" onclick="calcInput('/')">÷</button>
-            <button class="calc-btn" onclick="calcInput('7')">7</button>
-            <button class="calc-btn" onclick="calcInput('8')">8</button>
-            <button class="calc-btn" onclick="calcInput('9')">9</button>
-            <button class="calc-btn op-btn" onclick="calcInput('*')">×</button>
-            <button class="calc-btn op-btn" onclick="calcInput('(')">(</button>
-            <button class="calc-btn" onclick="calcInput('4')">4</button>
-            <button class="calc-btn" onclick="calcInput('5')">5</button>
-            <button class="calc-btn" onclick="calcInput('6')">6</button>
-            <button class="calc-btn op-btn" onclick="calcInput('-')">−</button>
-            <button class="calc-btn op-btn" onclick="calcInput(')')">)</button>
-            <button class="calc-btn" onclick="calcInput('1')">1</button>
-            <button class="calc-btn" onclick="calcInput('2')">2</button>
-            <button class="calc-btn" onclick="calcInput('3')">3</button>
-            <button class="calc-btn op-btn" onclick="calcInput('+')">+</button>
-            <button class="calc-btn op-btn" style="background:var(--ucla-gold); color:black;" onclick="solveCalc()">=</button>
-            <button class="calc-btn" onclick="calcInput('0')" style="grid-column: span 2">0</button>
-            <button class="calc-btn" onclick="calcInput('.')">.</button>
-            <button class="calc-btn" onclick="calcInput('Math.E')">e</button>
-            <button class="calc-btn" onclick="backspace()">⌫</button>
-        </div>
-    </div>
-
-    <div id="graph-calc" style="display:none; height: 100%;">
-        <div id="desmos-container" style="height: 480px;"></div>
-    </div>
-</div>
-
 <script>
-    let currentAnswer = 0;
+    // Changed to string to handle fractions and letters
+    let currentAnswer = ""; 
     let allQuestions = [];
     let timerInterval, startTime, timerRunning = false;
-    let calcExpr = "";
-    let calculator = null;
 
     async function fetchQuestions() {
         try {
@@ -209,39 +159,6 @@
         setMode('easy', document.getElementById('btn-easy'));
     }
 
-    function toggleTools() {
-        const panel = document.getElementById('tool-panel');
-        const isOpening = panel.style.display !== 'flex';
-        panel.style.display = isOpening ? 'flex' : 'none';
-        
-        if (isOpening && !calculator) {
-            calculator = Desmos.GraphingCalculator(document.getElementById('desmos-container'), {
-                keypad: true, expressions: true, settingsMenu: false, autosize: true
-            });
-        }
-    }
-
-    function switchTab(tab) {
-        document.getElementById('sci-calc').style.display = tab === 'sci' ? 'block' : 'none';
-        document.getElementById('graph-calc').style.display = tab === 'graph' ? 'block' : 'none';
-        document.getElementById('tab-sci').classList.toggle('active', tab === 'sci');
-        document.getElementById('tab-graph').classList.toggle('active', tab === 'graph');
-        if (tab === 'graph' && calculator) {
-            setTimeout(() => calculator.resize(), 10);
-        }
-    }
-
-    function calcInput(val) { calcExpr += val; document.getElementById('calc-screen').innerText = calcExpr; }
-    function clearCalc() { calcExpr = ""; document.getElementById('calc-screen').innerText = "0"; }
-    function backspace() { calcExpr = calcExpr.slice(0, -1); document.getElementById('calc-screen').innerText = calcExpr || "0"; }
-    function solveCalc() {
-        try {
-            let res = eval(calcExpr);
-            document.getElementById('calc-screen').innerText = res;
-            calcExpr = res.toString();
-        } catch(e) { document.getElementById('calc-screen').innerText = "Error"; calcExpr = ""; }
-    }
-
     function setMode(level, el) {
         document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
         if(el) el.classList.add('active');
@@ -252,12 +169,14 @@
 
         if (selected) {
             prob.innerHTML = `\\[ ${selected.question_text} \\]`;
-            currentAnswer = parseFloat(selected.answer);
+            // Stores answer as text, trimming spaces and making lowercase for easy checking
+            currentAnswer = selected.answer.trim().toLowerCase(); 
             inst.innerText = selected.instruction || "";
         } else {
-            if (level === 'easy') { prob.innerHTML = "\\[ 5 \\times 12 \\]"; currentAnswer = 60; }
-            else if (level === 'medium') { prob.innerHTML = "\\[ x^2 = 16 \\]"; currentAnswer = 4; }
-            else { prob.innerHTML = "\\[ \\int 2x dx \\]"; currentAnswer = 0; }
+            // Default fallbacks if CSV fails
+            if (level === 'easy') { prob.innerHTML = "\\[ 5 \\times 12 \\]"; currentAnswer = "60"; }
+            else if (level === 'medium') { prob.innerHTML = "\\[ x^2 = 16 \\]"; currentAnswer = "4"; }
+            else { prob.innerHTML = "\\[ \\int 2x dx \\]"; currentAnswer = "x^2"; }
         }
 
         if (window.MathJax && window.MathJax.typesetPromise) {
@@ -284,9 +203,11 @@
     }
 
     function checkAnswer() {
-        const userVal = parseFloat(document.getElementById('user-answer').value);
+        // Grabs the user's text, removes extra spaces, makes it lowercase
+        const userVal = document.getElementById('user-answer').value.trim().toLowerCase();
         const feedback = document.getElementById('feedback');
-        if (Math.abs(userVal - currentAnswer) < 0.01) {
+        
+        if (userVal === currentAnswer) {
             clearInterval(timerInterval); timerRunning = false;
             feedback.innerText = "CORRECT! 🎉";
             feedback.style.color = "var(--success-green)";

@@ -1,4 +1,4 @@
 difficulty,question_text,answer,instruction
 easy,"\log_{2}(x) = 3",8,"Solve for x"
-medium,"\int (3x^4 - 5x^2 + 2) dx","\frac{3x^5}{5} - \frac{5x^3}{3} + 2x + C","Evaluate the integral"
+medium,"\int (3x^4 - 5x^2 + 2) dx","3x^5/5 - 5x^3/3 + 2x + C","Evaluate the integral"
 hard,"x + (x+1) + (x+2) + (x+3) = 50","11, 12, 13, 14","The sum of 4 consecutive integers is 50. Find the integers"
