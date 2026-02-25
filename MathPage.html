@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Math App - Daily Math</title>
+    <title>Daily Math App - Challenge</title>
     
     <script>
         window.MathJax = {
@@ -11,13 +11,9 @@
             inlineMath: [['$', '$'], ['\\(', '\\)']],
             displayMath: [['\\[', '\\]']]
           },
-          startup: {
-            typeset: false
-          }
+          startup: { typeset: true }
         };
     </script>
-    
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <style>
@@ -28,234 +24,150 @@
             --white: #FFFFFF;
             --success-green: #4CAF50;
             --error-red: #f44336;
-            --card-bg: rgba(255, 255, 255, 0.1);
         }
 
         body {
             background-color: var(--dark-blue);
             margin: 0; display: flex; justify-content: center; align-items: center;
-            height: 100vh; font-family: 'Segoe UI', system-ui, sans-serif; color: var(--white); overflow: hidden;
+            min-height: 100vh; font-family: 'Segoe UI', sans-serif; color: var(--white);
         }
 
         .app-container {
             display: flex; flex-direction: column; align-items: center;
-            gap: 20px; padding: 20px; width: 95vw;
-            max-height: 100vh;
-            overflow-y: auto;
+            gap: 20px; padding: 20px; width: 90%; max-width: 500px;
         }
 
-        /* MATH CARD: Increased height and added padding at the top so math doesn't hit the navbar */
         .card {
-            background: var(--card-bg); backdrop-filter: blur(15px);
+            background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 24px;
-            padding: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-            width: 100%; max-width: 500px;
+            padding: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            width: 100%; text-align: center;
         }
 
-        .math-card { 
-            min-height: 480px; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: flex-start; 
-            text-align: center;
-            padding-top: 35px;
-        }
-        
-        .music-card { 
-            padding: 15px; 
-            border: 1px solid rgba(255, 209, 0, 0.2);
-            min-height: 160px; 
-        }
-
-        /* PROBLEM AREA: Added padding-top and height auto to fix the clipping issue you were seeing */
+        /* FIX: Increased min-height so large sigmas don't get cut off */
         .problem-area { 
             font-size: 2.2rem; 
-            min-height: 160px; 
-            height: auto; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            margin: 15px 0;
-            padding: 30px 10px; 
+            min-height: 180px; 
+            margin: 20px 0;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white; /* Explicitly white visibility */
             overflow-x: auto;
-            word-wrap: break-word;
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
         }
 
-        .blurred { filter: blur(20px); pointer-events: none; }
+        .blurred { filter: blur(15px); pointer-events: none; }
         
-        .timer-display { font-family: 'Courier New', monospace; font-size: 1.8rem; color: var(--ucla-gold); margin-bottom: 10px; font-weight: bold;}
+        .timer-display { font-family: monospace; font-size: 2rem; color: var(--ucla-gold); margin-bottom: 15px; }
         
-        /* ANSWER INPUT: Changed to text so you can type "1/2" or "x^2" */
         .answer-input { 
-            background: rgba(255, 255, 255, 0.08); 
+            background: rgba(255, 255, 255, 0.1); 
             border: 2px solid var(--ucla-blue); 
             border-radius: 12px; padding: 12px; 
             color: white; font-size: 1.5rem; 
-            width: 200px; text-align: center; 
-            margin: 10px auto; outline: none; 
+            width: 80%; text-align: center; margin: 15px 0;
         }
         
-        .cat-btn { background: none; border: 1px solid var(--ucla-blue); color: white; padding: 8px 18px; border-radius: 20px; cursor: pointer; margin: 5px; transition: 0.3s; }
+        .cat-btn { background: none; border: 1px solid var(--ucla-blue); color: white; padding: 10px 20px; border-radius: 20px; cursor: pointer; margin: 5px; }
         .cat-btn.active { background: var(--ucla-blue); border-color: var(--ucla-gold); }
+        
+        .submit-btn { background: var(--ucla-gold); color: var(--dark-blue); border: none; padding: 15px 30px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%; }
 
-        .discord-btn {
-            display: inline-block;
-            margin-top: 15px;
-            color: var(--ucla-gold);
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 0.85rem;
-            border: 1px solid var(--ucla-gold);
-            padding: 8px 15px;
-            border-radius: 12px;
-            transition: 0.3s;
-            text-transform: uppercase;
-        }
-        .discord-btn:hover { background: var(--ucla-gold); color: var(--dark-blue); }
-
-        .pulse-icon { width: 8px; height: 8px; background-color: var(--ucla-gold); border-radius: 50%; display: inline-block; animation: pulse 2s infinite; margin-right: 8px; }
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(255, 209, 0, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(255, 209, 0, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 209, 0, 0); }
-        }
+        /* Spotify styling */
+        .music-card { padding: 10px; border: 1px solid rgba(255, 209, 0, 0.3); }
     </style>
 </head>
 <body>
 
 <div class="app-container">
-    <div class="card math-card">
+    <div class="card">
         <div class="timer-display" id="stopwatch">00:00.0</div>
         
-        <div class="category-container">
+        <div>
             <button id="btn-easy" class="cat-btn" onclick="setMode('easy', this)">Easy</button>
             <button id="btn-medium" class="cat-btn" onclick="setMode('medium', this)">Medium</button>
             <button id="btn-hard" class="cat-btn" onclick="setMode('hard', this)">Hard</button>
         </div>
 
-        <div id="instruction-text" style="margin-top:10px; color: rgba(255,255,255,0.6); font-size: 0.85rem; font-style: italic;"></div>
+        <div id="problem-display" class="problem-area blurred">
+            \[ \text{Select Difficulty} \]
+        </div>
         
-        <div id="problem-display" class="problem-area blurred">2 + 2 = ?</div>
+        <button id="start-btn" class="submit-btn" style="background: var(--success-green); color: white; margin-bottom: 10px;" onclick="startTimer()">START CHALLENGE</button>
         
-        <button id="start-btn" class="cat-btn" style="background: var(--success-green); width: 160px; align-self: center; border: none; font-weight: bold;" onclick="startTimer()">START</button>
+        <input type="text" id="user-answer" class="answer-input" placeholder="Answer" disabled>
+        <button id="submit-btn" class="submit-btn" onclick="checkAnswer()" disabled>SUBMIT</button>
         
-        <input type="text" id="user-answer" class="answer-input" placeholder="Your Answer" disabled>
-        
-        <button id="submit-btn" class="cat-btn" style="background: var(--ucla-gold); color: black; font-weight: bold; width: 200px; align-self: center; border: none;" onclick="checkAnswer()" disabled>SUBMIT</button>
-        
-        <div id="feedback" style="margin-top: 10px; font-weight: bold; font-size: 1.1rem;"></div>
-        
-        <a href="https://discord.gg/kW5f4cbyU" target="_blank" class="discord-btn">Solutions in Discord</a>
+        <div id="feedback" style="margin-top: 15px;"></div>
     </div>
 
     <div class="card music-card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-            <h3 style="color: var(--ucla-gold); margin: 0; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; display: flex; align-items: center;">
-                <span class="pulse-icon"></span> Study Beats
-            </h3>
-            <span style="font-size: 0.6rem; color: rgba(255,255,255,0.4);">SPOTIFY PLAYER</span>
-        </div>
-        <div style="box-shadow: 0 4px 15px rgba(0,0,0,0.3); border-radius: 12px; overflow: hidden; background: #000;">
-            <iframe 
-                style="border-radius:12px;" 
-                src="https://open.spotify.com/embed/playlist/4wPhsqB77Z4Q22RTAX1Dij?utm_source=generator" 
-                width="100%" 
-                height="152" 
-                frameBorder="0" 
-                allowfullscreen="" 
-                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
-                loading="lazy">
-            </iframe>
-        </div>
+        <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DWZeKzbSptPLT?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
     </div>
 </div>
 
 <script>
     let currentAnswer = "";
     let allQuestions = [];
-    let timerInterval, startTime, timerRunning = false;
+    let timerInterval, startTime;
 
     async function fetchQuestions() {
         try {
-            const response = await fetch(`questions.csv?t=${Date.now()}`); 
-            const csvText = await response.text();
-            const lines = csvText.trim().split('\n');
-            allQuestions = lines.map(line => {
-                const parts = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
-                if (!parts) return null;
+            const response = await fetch('questions.csv?v=' + Date.now());
+            const text = await response.text();
+            const rows = text.split('\n').slice(1); // skip header
+            allQuestions = rows.map(row => {
+                const cols = row.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
+                if (!cols) return null;
                 return {
-                    difficulty: parts[0].replace(/"/g, ''),
-                    question_text: parts[1].replace(/"/g, ''),
-                    answer: parts[2].replace(/"/g, '').trim().toLowerCase(),
-                    instruction: parts[3] ? parts[3].replace(/"/g, '') : ""
+                    difficulty: cols[0].replace(/"/g, ''),
+                    question: cols[1].replace(/"/g, ''),
+                    answer: cols[2].replace(/"/g, '').toLowerCase().trim()
                 };
-            }).filter(q => q !== null);
-        } catch (error) {
-            console.error("CSV Fetch Error:", error);
-        }
-        setMode('easy', document.getElementById('btn-easy'));
+            }).filter(q => q);
+            setMode('easy', document.getElementById('btn-easy'));
+        } catch (e) { console.error("CSV fail", e); }
     }
 
-    function setMode(level, el) {
+    function setMode(level, btn) {
         document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-        if(el) el.classList.add('active');
-
-        const prob = document.getElementById('problem-display');
-        const inst = document.getElementById('instruction-text');
-        const selected = allQuestions.find(q => q.difficulty.toLowerCase() === level.toLowerCase());
-
-        if (selected) {
-            prob.innerHTML = `\\[ ${selected.question_text} \\]`;
-            currentAnswer = selected.answer;
-            inst.innerText = selected.instruction || "";
+        btn.classList.add('active');
+        const q = allQuestions.find(x => x.difficulty === level);
+        if(q) {
+            const display = document.getElementById('problem-display');
+            display.innerHTML = `\\[ ${q.question} \\]`;
+            currentAnswer = q.answer;
+            if(window.MathJax) MathJax.typeset();
         }
-
-        if (window.MathJax && window.MathJax.typesetPromise) {
-            window.MathJax.typesetPromise([prob]).catch((err) => console.log(err.message));
-        }
-        resetGame();
     }
 
     function startTimer() {
-        if (timerRunning) return;
-        timerRunning = true; startTime = Date.now();
-        timerInterval = setInterval(() => {
-            const diff = Date.now() - startTime;
-            const mins = Math.floor(diff / 60000).toString().padStart(2, '0');
-            const secs = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
-            const ms = Math.floor((diff % 1000) / 100);
-            document.getElementById('stopwatch').innerText = `${mins}:${secs}.${ms}`;
-        }, 100);
+        startTime = Date.now();
         document.getElementById('problem-display').classList.remove('blurred');
         document.getElementById('user-answer').disabled = false;
         document.getElementById('submit-btn').disabled = false;
         document.getElementById('start-btn').style.display = 'none';
-        document.getElementById('user-answer').focus();
+        timerInterval = setInterval(updateTimer, 100);
+    }
+
+    function updateTimer() {
+        const diff = Date.now() - startTime;
+        const s = Math.floor(diff / 1000);
+        const ms = Math.floor((diff % 1000) / 100);
+        document.getElementById('stopwatch').innerText = `${s.toString().padStart(2, '0')}.${ms}`;
     }
 
     function checkAnswer() {
-        const userVal = document.getElementById('user-answer').value.trim().toLowerCase();
-        const feedback = document.getElementById('feedback');
-        
-        if (userVal === currentAnswer) {
-            clearInterval(timerInterval); timerRunning = false;
-            feedback.innerText = "CORRECT! 🎉";
-            feedback.style.color = "var(--success-green)";
+        const val = document.getElementById('user-answer').value.toLowerCase().trim();
+        if(val === currentAnswer) {
+            clearInterval(timerInterval);
+            document.getElementById('feedback').innerHTML = "✅ Correct!";
         } else {
-            feedback.innerText = "Incorrect! ❌";
-            feedback.style.color = "var(--error-red)";
+            document.getElementById('feedback').innerHTML = "❌ Try again";
         }
-    }
-
-    function resetGame() {
-        clearInterval(timerInterval); timerRunning = false;
-        document.getElementById('stopwatch').innerText = "00:00.0";
-        document.getElementById('problem-display').classList.add('blurred');
-        document.getElementById('user-answer').disabled = true;
-        document.getElementById('user-answer').value = "";
-        document.getElementById('submit-btn').disabled = true;
-        document.getElementById('start-btn').style.display = 'block';
-        document.getElementById('feedback').innerText = "";
     }
 
     window.onload = fetchQuestions;
