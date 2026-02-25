@@ -44,37 +44,74 @@
             overflow-y: auto;
         }
 
+        /* MATH CARD: Increased height and added padding at the top so math doesn't hit the navbar */
         .card {
             background: var(--card-bg); backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 24px;
             padding: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.4);
             width: 100%; max-width: 500px;
-            display: flex; flex-direction: column; align-items: center;
         }
 
-        .math-card { min-height: 380px; justify-content: center; text-align: center; }
+        .math-card { 
+            min-height: 480px; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: flex-start; 
+            text-align: center;
+            padding-top: 35px;
+        }
         
         .music-card { 
             padding: 15px; 
             border: 1px solid rgba(255, 209, 0, 0.2);
             min-height: 160px; 
-            width: 100%;
-            box-sizing: border-box;
         }
 
-        .problem-area { font-size: 2.5rem; min-height: 120px; display: flex; align-items: center; justify-content: center; margin: 15px 0; width: 100%; }
+        /* PROBLEM AREA: Added padding-top and height auto to fix the clipping issue you were seeing */
+        .problem-area { 
+            font-size: 2.2rem; 
+            min-height: 160px; 
+            height: auto; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            margin: 15px 0;
+            padding: 30px 10px; 
+            overflow-x: auto;
+            word-wrap: break-word;
+        }
+
         .blurred { filter: blur(20px); pointer-events: none; }
         
         .timer-display { font-family: 'Courier New', monospace; font-size: 1.8rem; color: var(--ucla-gold); margin-bottom: 10px; font-weight: bold;}
         
-        /* Updated Input to allow more space for expressions */
-        .answer-input { background: rgba(255, 255, 255, 0.08); border: 2px solid var(--ucla-blue); border-radius: 12px; padding: 12px; color: white; font-size: 1.5rem; width: 200px; text-align: center; margin: 10px auto; outline: none; font-family: 'Courier New', monospace; }
+        /* ANSWER INPUT: Changed to text so you can type "1/2" or "x^2" */
+        .answer-input { 
+            background: rgba(255, 255, 255, 0.08); 
+            border: 2px solid var(--ucla-blue); 
+            border-radius: 12px; padding: 12px; 
+            color: white; font-size: 1.5rem; 
+            width: 200px; text-align: center; 
+            margin: 10px auto; outline: none; 
+        }
         
         .cat-btn { background: none; border: 1px solid var(--ucla-blue); color: white; padding: 8px 18px; border-radius: 20px; cursor: pointer; margin: 5px; transition: 0.3s; }
         .cat-btn.active { background: var(--ucla-blue); border-color: var(--ucla-gold); }
 
-        .discord-link { margin-top: 15px; color: var(--ucla-gold); text-decoration: none; font-weight: bold; font-size: 0.95rem; border: 1px solid var(--ucla-gold); padding: 8px 16px; border-radius: 12px; transition: 0.3s; }
-        .discord-link:hover { background: var(--ucla-gold); color: var(--dark-blue); }
+        .discord-btn {
+            display: inline-block;
+            margin-top: 15px;
+            color: var(--ucla-gold);
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.85rem;
+            border: 1px solid var(--ucla-gold);
+            padding: 8px 15px;
+            border-radius: 12px;
+            transition: 0.3s;
+            text-transform: uppercase;
+        }
+        .discord-btn:hover { background: var(--ucla-gold); color: var(--dark-blue); }
 
         .pulse-icon { width: 8px; height: 8px; background-color: var(--ucla-gold); border-radius: 50%; display: inline-block; animation: pulse 2s infinite; margin-right: 8px; }
         @keyframes pulse {
@@ -97,6 +134,7 @@
         </div>
 
         <div id="instruction-text" style="margin-top:10px; color: rgba(255,255,255,0.6); font-size: 0.85rem; font-style: italic;"></div>
+        
         <div id="problem-display" class="problem-area blurred">2 + 2 = ?</div>
         
         <button id="start-btn" class="cat-btn" style="background: var(--success-green); width: 160px; align-self: center; border: none; font-weight: bold;" onclick="startTimer()">START</button>
@@ -105,19 +143,19 @@
         
         <button id="submit-btn" class="cat-btn" style="background: var(--ucla-gold); color: black; font-weight: bold; width: 200px; align-self: center; border: none;" onclick="checkAnswer()" disabled>SUBMIT</button>
         
-        <div id="feedback" style="margin-top: 15px; font-weight: bold; font-size: 1.1rem;"></div>
+        <div id="feedback" style="margin-top: 10px; font-weight: bold; font-size: 1.1rem;"></div>
         
-        <a href="https://discord.gg/kW5f4cbyU" target="_blank" class="discord-link">Solutions in Discord</a>
+        <a href="https://discord.gg/kW5f4cbyU" target="_blank" class="discord-btn">Solutions in Discord</a>
     </div>
 
     <div class="card music-card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; width: 100%;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
             <h3 style="color: var(--ucla-gold); margin: 0; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; display: flex; align-items: center;">
                 <span class="pulse-icon"></span> Study Beats
             </h3>
             <span style="font-size: 0.6rem; color: rgba(255,255,255,0.4);">SPOTIFY PLAYER</span>
         </div>
-        <div style="box-shadow: 0 4px 15px rgba(0,0,0,0.3); border-radius: 12px; overflow: hidden; background: #000; width: 100%;">
+        <div style="box-shadow: 0 4px 15px rgba(0,0,0,0.3); border-radius: 12px; overflow: hidden; background: #000;">
             <iframe 
                 style="border-radius:12px;" 
                 src="https://open.spotify.com/embed/playlist/4wPhsqB77Z4Q22RTAX1Dij?utm_source=generator" 
@@ -133,8 +171,7 @@
 </div>
 
 <script>
-    // Changed to string to handle fractions and letters
-    let currentAnswer = ""; 
+    let currentAnswer = "";
     let allQuestions = [];
     let timerInterval, startTime, timerRunning = false;
 
@@ -149,7 +186,7 @@
                 return {
                     difficulty: parts[0].replace(/"/g, ''),
                     question_text: parts[1].replace(/"/g, ''),
-                    answer: parts[2].replace(/"/g, ''),
+                    answer: parts[2].replace(/"/g, '').trim().toLowerCase(),
                     instruction: parts[3] ? parts[3].replace(/"/g, '') : ""
                 };
             }).filter(q => q !== null);
@@ -169,14 +206,8 @@
 
         if (selected) {
             prob.innerHTML = `\\[ ${selected.question_text} \\]`;
-            // Stores answer as text, trimming spaces and making lowercase for easy checking
-            currentAnswer = selected.answer.trim().toLowerCase(); 
+            currentAnswer = selected.answer;
             inst.innerText = selected.instruction || "";
-        } else {
-            // Default fallbacks if CSV fails
-            if (level === 'easy') { prob.innerHTML = "\\[ 5 \\times 12 \\]"; currentAnswer = "60"; }
-            else if (level === 'medium') { prob.innerHTML = "\\[ x^2 = 16 \\]"; currentAnswer = "4"; }
-            else { prob.innerHTML = "\\[ \\int 2x dx \\]"; currentAnswer = "x^2"; }
         }
 
         if (window.MathJax && window.MathJax.typesetPromise) {
@@ -203,7 +234,6 @@
     }
 
     function checkAnswer() {
-        // Grabs the user's text, removes extra spaces, makes it lowercase
         const userVal = document.getElementById('user-answer').value.trim().toLowerCase();
         const feedback = document.getElementById('feedback');
         
