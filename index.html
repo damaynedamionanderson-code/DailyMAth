@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -108,6 +108,58 @@
             border: 2px solid var(--ucla-gold); width: 90%; max-width: 350px; 
             border-radius: 30px; text-align: center;
         }
+    </style>
+    <style>
+        /* ADD THIS TO YOUR INDEX.HTML STYLE SECTION */
+
+@media (max-width: 600px) {
+    .navbar {
+        padding: 0 15px;
+    }
+
+    .nav-logo {
+        font-size: 1.2em;
+    }
+
+    .nav-links a {
+        margin-left: 10px;
+        font-size: 0.7rem;
+    }
+
+    h1 {
+        font-size: 2.5rem !important; /* Stops the title from being too big */
+        line-height: 1.1;
+    }
+
+    .tagline {
+        font-size: 1rem;
+    }
+
+    .math-btn {
+        padding: 15px 30px;
+        font-size: 1rem;
+        width: 80%;
+    }
+
+    .sub-card {
+        width: 85%;
+        padding: 15px;
+    }
+
+    .sub-group {
+        flex-direction: column; /* Stacks input and button on top of each other */
+        background: transparent;
+        border: none;
+        gap: 10px;
+    }
+
+    .sub-input {
+        background: rgba(0, 0, 0, 0.2);
+        width: 100%;
+        border-radius: 8px;
+        border: 1px solid var(--ucla-blue);
+    }
+}
     </style>
 </head>
 <body>
