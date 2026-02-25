@@ -83,6 +83,42 @@
             min-height: 160px; 
         }
     </style>
+    <style>
+        /* ADD THIS TO YOUR MATHPAGE.HTML STYLE SECTION */
+
+/* This handles the phone layout */
+@media (max-width: 600px) {
+    .app-container {
+        padding: 10px;
+        width: 100vw; /* Takes up full width on phone */
+    }
+
+    .card {
+        padding: 15px;
+        border-radius: 16px;
+        width: 90%; /* Leaves a little gap on the sides */
+    }
+
+    .problem-area {
+        font-size: 1.5rem !important; /* Forces math to be smaller on phones */
+        min-height: 140px;
+    }
+
+    .timer-display {
+        font-size: 1.5rem;
+    }
+
+    .answer-input {
+        width: 90%; /* Makes input box fit the card */
+        font-size: 1.2rem;
+    }
+
+    .cat-btn {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+}
+    </style>
 </head>
 <body>
 
