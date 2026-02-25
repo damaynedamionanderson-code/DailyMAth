@@ -30,6 +30,7 @@
             background-color: var(--dark-blue);
             margin: 0; display: flex; justify-content: center; align-items: center;
             min-height: 100vh; font-family: 'Segoe UI', sans-serif; color: var(--white);
+            overflow-x: hidden;
         }
 
         .app-container {
@@ -44,40 +45,43 @@
             width: 100%; text-align: center;
         }
 
-        /* FIX: Increased min-height so large sigmas don't get cut off */
+        /* Removed darker box and added dynamic font scaling class */
         .problem-area { 
             font-size: 2.2rem; 
             min-height: 180px; 
-            margin: 20px 0;
-            padding: 20px;
+            margin: 15px 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white; /* Explicitly white visibility */
-            overflow-x: auto;
-            background: rgba(0,0,0,0.2);
-            border-radius: 12px;
+            color: white;
+            transition: font-size 0.2s ease; /* Smoothly shrinks font if needed */
         }
-
-        .blurred { filter: blur(15px); pointer-events: none; }
         
-        .timer-display { font-family: monospace; font-size: 2rem; color: var(--ucla-gold); margin-bottom: 15px; }
+        /* Class for smaller font on long questions */
+        .small-math { font-size: 1.5rem !important; }
+
+        .blurred { filter: blur(20px); pointer-events: none; }
+        
+        .timer-display { font-family: monospace; font-size: 2rem; color: var(--ucla-gold); margin-bottom: 10px; }
         
         .answer-input { 
             background: rgba(255, 255, 255, 0.1); 
             border: 2px solid var(--ucla-blue); 
             border-radius: 12px; padding: 12px; 
             color: white; font-size: 1.5rem; 
-            width: 80%; text-align: center; margin: 15px 0;
+            width: 80%; text-align: center; margin: 15px 0; outline: none;
         }
         
-        .cat-btn { background: none; border: 1px solid var(--ucla-blue); color: white; padding: 10px 20px; border-radius: 20px; cursor: pointer; margin: 5px; }
+        .cat-btn { background: none; border: 1px solid var(--ucla-blue); color: white; padding: 10px 20px; border-radius: 20px; cursor: pointer; margin: 5px; transition: 0.3s; }
         .cat-btn.active { background: var(--ucla-blue); border-color: var(--ucla-gold); }
         
         .submit-btn { background: var(--ucla-gold); color: var(--dark-blue); border: none; padding: 15px 30px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%; }
 
-        /* Spotify styling */
-        .music-card { padding: 10px; border: 1px solid rgba(255, 209, 0, 0.3); }
+        .music-card { 
+            padding: 15px; 
+            border: 1px solid rgba(255, 209, 0, 0.2);
+            min-height: 160px; 
+        }
     </style>
 </head>
 <body>
@@ -93,19 +97,31 @@
         </div>
 
         <div id="problem-display" class="problem-area blurred">
-            \[ \text{Select Difficulty} \]
+            \[ \dots \]
         </div>
         
-        <button id="start-btn" class="submit-btn" style="background: var(--success-green); color: white; margin-bottom: 10px;" onclick="startTimer()">START CHALLENGE</button>
+        <button id="start-btn" class="submit-btn" style="background: var(--success-green); color: white;" onclick="startTimer()">START CHALLENGE</button>
         
-        <input type="text" id="user-answer" class="answer-input" placeholder="Answer" disabled>
+        <input type="text" id="user-answer" class="answer-input" placeholder="?" disabled>
         <button id="submit-btn" class="submit-btn" onclick="checkAnswer()" disabled>SUBMIT</button>
         
-        <div id="feedback" style="margin-top: 15px;"></div>
+        <div id="feedback" style="margin-top: 15px; font-weight: bold;"></div>
     </div>
 
     <div class="card music-card">
-        <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DWZeKzbSptPLT?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h3 style="color: var(--ucla-gold); margin: 0; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px;">Study Beats</h3>
+        </div>
+        <iframe 
+            style="border-radius:12px;" 
+            src="https://open.spotify.com/embed/playlist/4wPhsqB77Z4Q22RTAX1Dij?utm_source=generator" 
+            width="100%" 
+            height="152" 
+            frameBorder="0" 
+            allowfullscreen="" 
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+            loading="lazy">
+        </iframe>
     </div>
 </div>
 
@@ -116,9 +132,9 @@
 
     async function fetchQuestions() {
         try {
-            const response = await fetch('questions.csv?v=' + Date.now());
+            const response = await fetch('questions.csv?t=' + Date.now());
             const text = await response.text();
-            const rows = text.split('\n').slice(1); // skip header
+            const rows = text.split('\n').slice(1);
             allQuestions = rows.map(row => {
                 const cols = row.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
                 if (!cols) return null;
@@ -129,19 +145,29 @@
                 };
             }).filter(q => q);
             setMode('easy', document.getElementById('btn-easy'));
-        } catch (e) { console.error("CSV fail", e); }
+        } catch (e) { console.error("CSV error", e); }
     }
 
     function setMode(level, btn) {
         document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        const q = allQuestions.find(x => x.difficulty === level);
+        const q = allQuestions.find(x => x.difficulty.toLowerCase() === level.toLowerCase());
+        
         if(q) {
             const display = document.getElementById('problem-display');
+            
+            // Check question length to shrink font if it's a "Hard" problem
+            if (q.question.length > 50) {
+                display.classList.add('small-math');
+            } else {
+                display.classList.remove('small-math');
+            }
+
             display.innerHTML = `\\[ ${q.question} \\]`;
             currentAnswer = q.answer;
             if(window.MathJax) MathJax.typeset();
         }
+        resetGame();
     }
 
     function startTimer() {
@@ -155,19 +181,33 @@
 
     function updateTimer() {
         const diff = Date.now() - startTime;
-        const s = Math.floor(diff / 1000);
+        const s = Math.floor(diff / 1000).toString().padStart(2, '0');
         const ms = Math.floor((diff % 1000) / 100);
-        document.getElementById('stopwatch').innerText = `${s.toString().padStart(2, '0')}.${ms}`;
+        document.getElementById('stopwatch').innerText = `${s}.${ms}`;
     }
 
     function checkAnswer() {
         const val = document.getElementById('user-answer').value.toLowerCase().trim();
+        const feedback = document.getElementById('feedback');
         if(val === currentAnswer) {
             clearInterval(timerInterval);
-            document.getElementById('feedback').innerHTML = "✅ Correct!";
+            feedback.innerHTML = "✅ CORRECT!";
+            feedback.style.color = "var(--success-green)";
         } else {
-            document.getElementById('feedback').innerHTML = "❌ Try again";
+            feedback.innerHTML = "❌ TRY AGAIN";
+            feedback.style.color = "var(--error-red)";
         }
+    }
+
+    function resetGame() {
+        clearInterval(timerInterval);
+        document.getElementById('stopwatch').innerText = "00:00.0";
+        document.getElementById('problem-display').classList.add('blurred');
+        document.getElementById('user-answer').disabled = true;
+        document.getElementById('user-answer').value = "";
+        document.getElementById('submit-btn').disabled = true;
+        document.getElementById('start-btn').style.display = 'block';
+        document.getElementById('feedback').innerText = "";
     }
 
     window.onload = fetchQuestions;
