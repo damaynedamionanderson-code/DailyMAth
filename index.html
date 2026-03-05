@@ -182,9 +182,13 @@ We are currently refining our digital workspace to better serve you. The site wi
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 <script>
+
 const TOTAL_HOURS = 255;
 const TOTAL_MS = TOTAL_HOURS * 60 * 60 * 1000;
-const STORAGE_KEY = "dailyMathUpdateStartMs";
+
+/* GLOBAL START TIME (same for everyone)
+Change this date to when the countdown begins */
+const GLOBAL_START = new Date("2026-03-05T12:00:00Z").getTime();
 
 const statusBadge = document.getElementById("statusBadge");
 const pageTitle = document.getElementById("pageTitle");
@@ -192,19 +196,12 @@ const pageDescription = document.getElementById("pageDescription");
 const timerWrap = document.getElementById("timerWrap");
 const timerValue = document.getElementById("timerValue");
 
-function getOrCreateStartTime() {
-const existing = Number(localStorage.getItem(STORAGE_KEY));
-if (Number.isFinite(existing) && existing > 0) return existing;
-const now = Date.now();
-localStorage.setItem(STORAGE_KEY, String(now));
-return now;
-}
-
 function formatRemaining(ms) {
 const totalSeconds = Math.max(0, Math.floor(ms / 1000));
 const hours = Math.floor(totalSeconds / 3600);
 const minutes = Math.floor((totalSeconds % 3600) / 60);
 const seconds = totalSeconds % 60;
+
 return String(hours).padStart(3, "0") + ":" +
 String(minutes).padStart(2, "0") + ":" +
 String(seconds).padStart(2, "0");
@@ -212,13 +209,16 @@ String(seconds).padStart(2, "0");
 
 function fireConfetti() {
 if (typeof confetti !== "function") return;
+
 const count = 260;
 const defaults = { origin: { y: 0.7 } };
+
 function shoot(ratio, opts) {
 confetti(Object.assign({}, defaults, opts, {
 particleCount: Math.floor(count * ratio)
 }));
 }
+
 shoot(0.25, { spread: 30, startVelocity: 55 });
 shoot(0.2, { spread: 60 });
 shoot(0.35, { spread: 100, decay: 0.91, scalar: 0.9 });
@@ -228,20 +228,25 @@ shoot(0.2, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
 function showFinishedState() {
 statusBadge.textContent = "Build Complete";
 statusBadge.classList.add("finished-badge");
+
 pageTitle.textContent = "Site Is Finished";
 pageTitle.classList.add("finished-title");
+
 pageDescription.textContent = "The countdown has ended. The site is ready.";
+
 timerWrap.classList.add("hidden");
+
 fireConfetti();
 }
 
-const startTime = getOrCreateStartTime();
 let finished = false;
 
 function tick() {
+
 if (finished) return;
+
 const now = Date.now();
-const elapsed = now - startTime;
+const elapsed = now - GLOBAL_START;
 const remaining = TOTAL_MS - elapsed;
 
 if (remaining <= 0) {
@@ -250,11 +255,14 @@ finished = true;
 showFinishedState();
 return;
 }
+
 timerValue.textContent = formatRemaining(remaining);
+
 }
 
 tick();
 setInterval(tick, 1000);
+
 </script>
 </body>
 </html>
