@@ -1,190 +1,249 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Update</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
-<style>
-:root {
---brand-blue: #005596;
---text-main: #1d1d1f;
---text-secondary: #6e6e73;
---bg-light: #f5f5f7;
---success-green: #0f9d58;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D-Makes Math | Update</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <style>
+        :root {
+            --brand-blue: #005596;
+            --text-main: #1d1d1f;
+            --text-secondary: #6e6e73;
+            --bg-light: #f5f5f7;
+            --success-green: #0f9d58;
+        }
 
-* {
-box-sizing: border-box;
-}
+        * { box-sizing: border-box; }
 
-body {
-background-color: var(--bg-light);
-background-image: radial-gradient(#d2d2d7 0.5px, transparent 0.5px);
-background-size: 20px 20px;
-font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
-margin: 0;
-display: flex;
-justify-content: center;
-align-items: center;
-min-height: 100svh;
-padding: 20px;
-color: var(--text-main);
-}
+        body {
+            background-color: var(--bg-light);
+            background-image: radial-gradient(#d2d2d7 0.5px, transparent 0.5px);
+            background-size: 20px 20px;
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100svh;
+            padding: 20px;
+            color: var(--text-main);
+            overflow: hidden;
+        }
 
-.container {
-background-color: rgba(255, 255, 255, 0.9);
-backdrop-filter: blur(10px);
-padding: 48px;
-border-radius: 24px;
-text-align: center;
-box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
-max-width: 560px;
-width: 100%;
-border: 1px solid rgba(255, 255, 255, 0.3);
-animation: fadeIn 0.8s ease-out;
-}
+        .container {
+            background-color: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 48px;
+            border-radius: 24px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+            max-width: 560px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            animation: fadeIn 0.8s ease-out;
+            position: relative;
+            z-index: 2;
+        }
 
-.status-badge {
-display: inline-flex;
-align-items: center;
-background-color: rgba(0, 85, 150, 0.08);
-color: var(--brand-blue);
-padding: 8px 18px;
-border-radius: 30px;
-font-size: 13px;
-font-weight: 600;
-margin-bottom: 24px;
-letter-spacing: 0.3px;
-text-transform: uppercase;
-}
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            background-color: rgba(0, 85, 150, 0.08);
+            color: var(--brand-blue);
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
 
-h1 {
-font-size: clamp(2rem, 4vw, 2.4rem);
-font-weight: 700;
-margin: 0 0 12px 0;
-letter-spacing: -0.8px;
-}
+        h1 {
+            font-size: clamp(2rem, 4vw, 2.4rem);
+            font-weight: 700;
+            margin: 0 0 12px 0;
+            letter-spacing: -0.8px;
+        }
 
-.description {
-color: var(--text-secondary);
-font-size: 16px;
-line-height: 1.6;
-margin-bottom: 22px;
-}
+        .description {
+            color: var(--text-secondary);
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 22px;
+        }
 
-.timer-wrap {
-background: #f9fbff;
-border: 1px solid #d6e4f1;
-border-radius: 14px;
-padding: 14px 16px;
-margin: 0 auto 28px;
-max-width: 420px;
-}
+        .timer-wrap {
+            background: #f9fbff;
+            border: 1px solid #d6e4f1;
+            border-radius: 14px;
+            padding: 20px 16px;
+            margin: 0 auto 28px;
+            max-width: 420px;
+            transition: all 0.3s ease;
+        }
 
-.timer-label {
-font-size: 0.82rem;
-color: #4f6478;
-letter-spacing: 0.07em;
-text-transform: uppercase;
-margin-bottom: 6px;
-}
+        /* Subtle pulse animation for the timer */
+        .timer-active {
+            animation: timerPulse 2s infinite ease-in-out;
+        }
 
-.timer-value {
-font-size: clamp(1.3rem, 4vw, 1.8rem);
-font-weight: 700;
-color: var(--brand-blue);
-font-variant-numeric: tabular-nums;
-}
+        .timer-label {
+            font-size: 0.82rem;
+            color: #4f6478;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
 
-.button-group {
-display: flex;
-gap: 12px;
-justify-content: center;
-flex-wrap: wrap;
-}
+        .timer-value {
+            font-size: clamp(1.5rem, 6vw, 2.2rem);
+            font-weight: 800;
+            color: var(--brand-blue);
+            font-variant-numeric: tabular-nums;
+            font-family: 'Courier New', Courier, monospace; /* Monospace keeps numbers from jumping */
+        }
 
-.btn {
-padding: 12px 28px;
-border-radius: 10px;
-font-size: 14px;
-font-weight: 600;
-text-decoration: none;
-transition: all 0.2s ease;
-}
+        .button-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
 
-.btn-primary {
-background-color: var(--brand-blue);
-color: #fff;
-}
+        .btn {
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
 
-.btn-primary:hover {
-background-color: #003b69;
-box-shadow: 0 4px 12px rgba(0, 85, 150, 0.2);
-}
+        .btn-primary {
+            background-color: var(--brand-blue);
+            color: #fff;
+        }
 
-.btn-secondary {
-background-color: transparent;
-color: var(--text-main);
-border: 1px solid #d2d2d7;
-}
+        .btn-primary:hover {
+            background-color: #003b69;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 85, 150, 0.2);
+        }
 
-.btn-secondary:hover {
-background-color: #f5f5f7;
-}
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-main);
+            border: 1px solid #d2d2d7;
+        }
 
-.footer-note {
-margin-top: 40px;
-font-size: 12px;
-color: #a1a1a6;
-letter-spacing: 0.2px;
-}
+        .btn-secondary:hover {
+            background-color: #f5f5f7;
+        }
 
-.hidden {
-display: none;
-}
+        .footer-note {
+            margin-top: 40px;
+            font-size: 12px;
+            color: #a1a1a6;
+            letter-spacing: 0.2px;
+        }
 
-.finished-badge {
-background-color: rgba(15, 157, 88, 0.12);
-color: var(--success-green);
-}
+        /* Success States */
+        .finished .status-badge {
+            background-color: rgba(15, 157, 88, 0.12);
+            color: var(--success-green);
+        }
 
-.finished-title {
-color: var(--success-green);
-}
+        .finished h1 {
+            color: var(--success-green);
+        }
 
-@keyframes fadeIn {
-from { opacity: 0; transform: translateY(20px); }
-to { opacity: 1; transform: translateY(0); }
-}
-</style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes timerPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); box-shadow: 0 0 15px rgba(0, 85, 150, 0.1); }
+            100% { transform: scale(1); }
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-<div id="statusBadge" class="status-badge">Rebuilding the Experience</div>
-<h1 id="pageTitle">Undergoing Maintenance</h1>
-<p id="pageDescription" class="description">
-We are currently refining our digital workspace to better serve you. The site will return shortly with improved performance and a fresh look.
-</p>
 
-<div id="timerWrap" class="timer-wrap">
-<div class="timer-label">Time Remaining</div>
-<div id="timerValue" class="timer-value">255:00:00</div>
-</div>
+<div class="container" id="mainContainer">
+    <div id="statusBadge" class="status-badge">System Calculating</div>
+    <h1 id="pageTitle">Math App Launching</h1>
+    <p id="pageDescription" class="description">
+        We're solving the final equations. The next generation of Daily-Math is arriving soon.
+    </p>
 
-<div class="button-group">
-<a href="https://discord.gg/kW5f4cbyU" class="btn btn-primary">Join Discord</a>
-<a href="https://daily-math.org/AboutMe.html" class="btn btn-secondary">About Me</a>
-</div>
+    <div id="timerWrap" class="timer-wrap timer-active">
+        <div class="timer-label">Universal Countdown</div>
+        <div id="timerValue" class="timer-value">500:00:00:00</div>
+    </div>
 
-<div class="footer-note">&copy; 2026 Daily-math</div>
+    <div class="button-group">
+        <a href="https://discord.gg/kW5f4cbyU" class="btn btn-primary">Join Discord</a>
+        <a href="https://daily-math.org/AboutMe.html" class="btn btn-secondary">About Me</a>
+    </div>
+
+    <div class="footer-note">&copy; 2026 Daily-math</div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 <script>
+    // 1. SET THE TARGET DATE
+    // 500 hours from March 7, 2026 is roughly March 28, 2026.
+    // We set a specific timestamp so it's the same for everyone.
+    const targetDate = new Date("March 28, 2026 15:00:00").getTime();
 
+    function updateCountdown() {
+        const now = new Date().getTime();
+        const distance = targetDate - now;
 
+        // Math for Time Calculations
+        const hours = Math.floor(distance / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
+        // Display with leading zeros
+        const hDisplay = hours < 100 ? String(hours).padStart(2, '0') : hours;
+        const mDisplay = String(minutes).padStart(2, '0');
+        const sDisplay = String(seconds).padStart(2, '0');
+
+        document.getElementById("timerValue").innerHTML = `${hDisplay}:${mDisplay}:${sDisplay}`;
+
+        // If the countdown is finished
+        if (distance < 0) {
+            clearInterval(timerInterval);
+            document.getElementById("timerValue").innerHTML = "00:00:00";
+            triggerLaunch();
+        }
+    }
+
+    function triggerLaunch() {
+        document.getElementById("statusBadge").innerHTML = "Mission Accomplished";
+        document.getElementById("pageTitle").innerHTML = "We Are Live!";
+        document.getElementById("pageDescription").innerHTML = "The wait is over. Welcome to the new era of mathematics.";
+        document.getElementById("mainContainer").classList.add("finished");
+        document.getElementById("timerWrap").classList.remove("timer-active");
+        
+        // Confetti Burst!
+        confetti({
+            particleCount: 150,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#005596', '#0f9d58', '#ffffff']
+        });
+    }
+
+    // Run every second
+    const timerInterval = setInterval(updateCountdown, 1000);
+    updateCountdown(); // Run immediately so there's no 1-second delay
 </script>
+
 </body>
 </html>
